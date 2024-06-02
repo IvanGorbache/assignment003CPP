@@ -1,10 +1,6 @@
-#include "player.hpp"
-#include "board.hpp"
 #include "constants.hpp"
+#include "player.hpp"
 #include "point.hpp"
-#include "intersection.hpp"
-#include "land.hpp"
-#include "developmentCard.hpp"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,21 +12,21 @@ class Catan
 private:
     Player players[3];
     bool firstTurn[3];
-    Board gameboard;
+    std::vector<std::vector<Point>> map;
     int currentTurn;
+    int knightsCount;
 public:
     Catan(Player p1, Player p2, Player p3);
 
     ~Catan();
 
-    void rollDice();
+    void rollDice(int cheat = 0);
 
     void placeSettelemnt(Point a);
 
     void placeRoad(Point a, Point b);
 
-
-    void trade(Player player, Constants::resource myResource, Constants::resource otherResource, int myAmount, int otherAmount);
+    void trade(Player player, Constants::type myResource, Constants::type otherResource, int myAmount, int otherAmount);
 
     void buyDevelopmentCard();
 

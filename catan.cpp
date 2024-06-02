@@ -14,21 +14,18 @@ Catan::~Catan()
 
 }
 
-void Catan::rollDice()
+void Catan::rollDice(int cheat=0)
 {
-    int roll = rand() % (12 - 2 + 1) + 2;
-    Point pointOfIntrest;
+    int roll = cheat;
+    if(!cheat)
+    {
+        roll = rand() % (12 - 2 + 1) + 2;
+    } 
     for(Player player : this->players)
     {
-        for(Intersection settlement : player.getSettlements())
+        for(Point settlement : player.getSettlements())
         {
-            if(Land* land = dynamic_cast<Land*>(&this->gameboard.getPointAt(settlement.getX(),settlement.getY())))
-            {
-                if(land->getId() == roll)
-                {
-                    player.modifyResouces(land->getResource(),settlement.getStatus());
-                }
-            }
+            
         }
     }
 }
@@ -36,17 +33,17 @@ void Catan::rollDice()
 void Catan::placeSettelemnt(Point a)
 {
     bool canPlace = false;
-    if(Intersection* pointOfIntrest = dynamic_cast<Intersection*>(&this->gameboard.getPointAt(a.getX(),a.getY())))
+    if(a.getClassification() == Constants::empty)
     {
-        if(pointOfIntrest->getOwner() == NULL && pointOfIntrest->getStatus() == Constants::empty && pointOfIntrest->geteighbors().size()>0)
+        if(&a.getOwner() == NULL && a.getClassification() == Constants::empty && a.getNeighbors().size()>0)
         {
-            for(Intersection neighbor : pointOfIntrest->geteighbors())
+            for(Point neighbor : a.getNeighbors())
             {
-                if(neighbor.getStatus() == Constants::empty)
+                if(neighbor.getClassification() == Constants::empty)
                 {
-                    for(Intersection outerNeighbor : neighbor.geteighbors())
+                    for(Point outerNeighbor : neighbor.getNeighbors())
                     {
-                        if(outerNeighbor.getStatus()!=Constants::empty)
+                        if(outerNeighbor.getClassification()!=Constants::empty)
                         {
                             canPlace = true;
                         }
@@ -60,7 +57,7 @@ void Catan::placeSettelemnt(Point a)
             }
             if(canPlace)
             {
-                this->gameboard.placeSettlement(this->players[this->currentTurn],a);
+                this->map[a.getX()][a.getY()].upgrade();
             }
         }
     }
@@ -68,26 +65,14 @@ void Catan::placeSettelemnt(Point a)
 
 void Catan::placeRoad(Point a, Point b)
 {
-    if(Intersection* start = dynamic_cast<Intersection*>(&this->gameboard.getPointAt(a.getX(),a.getY())))
+    if((Constants::empty<=a.getClassification() && a.getClassification()<=Constants::city)&&(Constants::empty<=b.getClassification() && b.getClassification()<=Constants::city))
     {
-        if(Intersection* end = dynamic_cast<Intersection*>(&this->gameboard.getPointAt(b.getX(),b.getY())))
-        {
-            if((start->getOwner() == this->players[currentTurn] && end->getOwner() == NULL) || (start->getOwner() == NULL && end->getOwner() == this->players[currentTurn]))
-            {
-                start->addNeighbor(*end);
-                end->addNeighbor(*start);
-            }
-            else if((start->getOwner() == this->players[currentTurn] && end->getOwner() == this->players[currentTurn]) && !start->isNeighbor(*end))
-            {
-                start->addNeighbor(*end);
-                end->addNeighbor(*start);
-            }
-        }
+
     }
 }
 
 
-void Catan::trade(Player player, Constants::resource myResource, Constants::resource otherResource, int myAmount, int otherAmount)
+void Catan::trade(Player player, Constants::type myResource, Constants::type otherResource, int myAmount, int otherAmount)
 {
     players[currentTurn].modifyResouces(otherResource,otherAmount);
     player.modifyResouces(myResource,myAmount);
@@ -108,7 +93,7 @@ void Catan::getCurrentPlayerCards()
 
 void Catan::useDevelopmentCard()
 {
-
+    
 }
 
 bool Catan::checkVictory()

@@ -1,24 +1,21 @@
 #include <string>
 #include <vector>
 
-#include "intersection.hpp"
 #include "constants.hpp"
-#include "developmentCard.hpp"
 
 class Player
 {
 private:
     int victoryPoints;
     std::string name;
-    std::vector<Intersection> settlements;
-    std::vector<DevelopmentCard> deck;
-    int resources[Constants::resoucesNum];
+    std::vector<Point> Settlements();
+    int resources[Constants::pleanty+1];
 public:
     Player(/* args */);
     ~Player();
 
-    int getVictoryPoints();
-    std::vector<Intersection> getSettlements();
+    int getVictoryPoints() const;
+    std::vector<Point> getSettlements() const;
 
-    void modifyResouces(Constants::resource type, int count);
+    void modifyResouces(Constants::type type, int count);
 };
