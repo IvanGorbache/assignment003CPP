@@ -4,15 +4,15 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <typeinfo>
-
+#include <iostream>
+#include <iomanip>
 
 class Catan
 {
 private:
     Player players[3];
     bool firstTurn[3];
-    std::vector<std::vector<Point>> map;
+    Point map[12][11];
     int currentTurn;
     int knightsCount;
 public:
@@ -26,15 +26,19 @@ public:
 
     void placeRoad(Point a, Point b);
 
-    void trade(Player player, Constants::type myResource, Constants::type otherResource, int myAmount, int otherAmount);
+    void trade(Player player, int myResource, int otherResource, int myAmount, int otherAmount);
 
     void buyDevelopmentCard();
 
     void getCurrentPlayerCards();
 
-    void useDevelopmentCard();
+    void useDevelopmentCard(int card);
 
     bool checkVictory();
 
     void endTurn();
+
+    void modifyResources(Player p, int myResource, int myAmount);
+
+    void printMap() const;
 };

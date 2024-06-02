@@ -1,16 +1,16 @@
 #include <vector>
-#include "player.hpp"
 #include "constants.hpp"
 class Point
 {
 private:
     unsigned int id, x, y;
     Player owner;
-    Constants::type classification;
+    int classification;
     std::vector<Point> neighbors;
     
 public:
-    Point(unsigned int id, unsigned int x, unsigned int y, Constants::type classification);
+    Point();
+    Point(unsigned int id, unsigned int x, unsigned int y, int classification);
     Point(unsigned int x, unsigned int y);
     ~Point();
 
@@ -19,8 +19,12 @@ public:
     unsigned int getId() const;
     Player getOwner() const; 
     std::vector<Point> getNeighbors() const;
-    Constants::type getClassification() const;
+    int getClassification() const;
+
+    void setID(unsigned int id);
+    void setOwner(Player p);
 
     void addNeighbor(Point newNeighbor);
+    bool isNeighbor(Point a);
     void upgrade();
 };

@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 
+#include "point.hpp"
 #include "constants.hpp"
 
 class Player
@@ -16,6 +17,6 @@ public:
 
     int getVictoryPoints() const;
     std::vector<Point> getSettlements() const;
-
-    void modifyResouces(Constants::type type, int count);
+    bool canTrade(int resource, int amount);
+    void modifyResources(int myResource, int myAmount);
 };
