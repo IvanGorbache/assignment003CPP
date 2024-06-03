@@ -1,4 +1,3 @@
-#include "constants.hpp"
 #include "player.hpp"
 #include "point.hpp"
 
@@ -10,13 +9,13 @@
 class Catan
 {
 private:
-    Player players[3];
+    Player *players[3];
     bool firstTurn[3];
     Point map[12][11];
     int currentTurn;
     int knightsCount;
 public:
-    Catan(Player p1, Player p2, Player p3);
+    Catan(Player *p1, Player *p2, Player *p3);
 
     ~Catan();
 
@@ -24,9 +23,9 @@ public:
 
     void placeSettelemnt(Point a);
 
-    void placeRoad(Point a, Point b);
+    void placeRoad(Point a, Point b, bool isFree);
 
-    void trade(Player player, int myResource, int otherResource, int myAmount, int otherAmount);
+    void trade(Player *player, int myResource, int otherResource, int myAmount, int otherAmount);
 
     void buyDevelopmentCard();
 
@@ -37,8 +36,6 @@ public:
     bool checkVictory();
 
     void endTurn();
-
-    void modifyResources(Player p, int myResource, int myAmount);
 
     void printMap() const;
 };

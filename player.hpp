@@ -1,22 +1,22 @@
 #include <string>
 #include <vector>
-
-#include "point.hpp"
 #include "constants.hpp"
+#include "point.hpp"
 
 class Player
 {
 private:
     int victoryPoints;
     std::string name;
-    std::vector<Point> Settlements();
+    std::vector<Point> settlements;
     int resources[Constants::pleanty+1];
 public:
-    Player(/* args */);
+    Player(std::string name);
     ~Player();
 
     int getVictoryPoints() const;
     std::vector<Point> getSettlements() const;
     bool canTrade(int resource, int amount);
     void modifyResources(int myResource, int myAmount);
+    int getResourceCount(int resource);
 };

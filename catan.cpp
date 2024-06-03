@@ -1,6 +1,6 @@
 #include "catan.hpp"
 
-Catan::Catan(Player p1, Player p2, Player p3)
+Catan::Catan(Player *p1, Player *p2, Player *p3)
 {
     this->players[0] = p1;
     this->players[1] = p2;
@@ -41,46 +41,47 @@ Catan::Catan(Player p1, Player p2, Player p3)
     }
 }
 
-void Catan::rollDice(int cheat=0)
+void Catan::rollDice(int cheat = 0)
 {
-    Point *area[4];
-    unsigned int x,y;
+    Point* area[4];
+    unsigned int x, y;
     int roll = cheat, amount = 0;
-    if(!cheat)
+    if (!cheat)
     {
-        roll = rand() % (12 - 2 + 1) + 2;
-    } 
-    for(Player player : this->players)
+        roll = rand() % (12 - 2 + 1) + 2; 
+    }
+
+    for (Player *player : this->players)
     {
-        for(Point settlement : player.getSettlements())
+        for (Point settlement : player->getSettlements())
         {
             x = settlement.getX();
             y = settlement.getY();
-            area[0] = x+1<11 ? &map[x+1][y]:NULL;
-            area[1] = x-1>=0 ? &map[x-1][y]:NULL;
-            area[2] = y+1<12 ? &map[x][y+1]:NULL;
-            area[2] = y-1>=0  ? &map[x][y-1]:NULL;
-            settlement.getClassification() == Constants::settlement? amount = 1 : amount = 2;
-            for(Point *p : area)
+            area[0] = x + 1 < 11 ? &map[x + 1][y] : NULL;
+            area[1] = x - 1 >= 0 ? &map[x - 1][y] : NULL;
+            area[2] = y + 1 < 12 ? &map[x][y + 1] : NULL;
+            area[3] = y - 1 >= 0 ? &map[x][y - 1] : NULL;
+
+            amount = settlement.getClassification() == Constants::settlement ? 1 : 2;
+
+            for (Point* p : area)
             {
-                if(p!=NULL)
+                if (p != NULL && p->getId() == roll)
                 {
-                    if(p->getId()==roll)
-                    {
-                        modifyResources(player,p->getClassification(),amount);
-                    }
+                    player->modifyResources(p->getId(),amount);
                 }
-            } 
+            }
         }
     }
 }
+
 
 void Catan::placeSettelemnt(Point a)
 {
     bool canPlace = false;
     if(a.getClassification() == Constants::empty)
     {
-        if(&a.getOwner() == NULL && a.getClassification() == Constants::empty && a.getNeighbors().size()>0)
+        if(a.getOwner() == NULL && a.getClassification() == Constants::empty && a.getNeighbors().size()>0)
         {
             for(Point neighbor : a.getNeighbors())
             {
@@ -102,21 +103,21 @@ void Catan::placeSettelemnt(Point a)
             }
             if(canPlace)
             {
-                this->map[a.getX()][a.getY()].upgrade();
+                map[a.getX()][a.getY()].upgrade();
             }
         }
     }
 }
 
-void Catan::placeRoad(Point a, Point b)
+void Catan::placeRoad(Point a, Point b, bool isFree)
 {
     if(!a.isNeighbor(b))
     {
         if((Constants::empty<=a.getClassification() && a.getClassification()<=Constants::city)&&(Constants::empty<=b.getClassification() && b.getClassification()<=Constants::city))
         {
-            if(((&a.getOwner() != NULL)&&(&b.getOwner() == NULL)) || ((&a.getOwner() == NULL)&&(&b.getOwner() != NULL)))
+            if(((a.getOwner() != NULL)&&(b.getOwner() == NULL)) || ((a.getOwner() == NULL)&&(b.getOwner() != NULL)))
             {
-                if(&a.getOwner() == &players[currentTurn] || &b.getOwner() == &players[currentTurn])
+                if(a.getOwner() == players[currentTurn] || b.getOwner() == players[currentTurn])
                 {
                     a.addNeighbor(b);
                     a.setOwner(players[currentTurn]);
@@ -125,7 +126,7 @@ void Catan::placeRoad(Point a, Point b)
                     b.setOwner(players[currentTurn]);
                 }
             }
-            else if (((&a.getOwner() != NULL)&&(&b.getOwner() != NULL)) && ((&a.getOwner() == &b.getOwner())))
+            else if (((a.getOwner() != NULL)&&(b.getOwner() != NULL)) && ((a.getOwner() == b.getOwner())))
             {
                 a.addNeighbor(b);
                 a.setOwner(players[currentTurn]);
@@ -138,20 +139,15 @@ void Catan::placeRoad(Point a, Point b)
 }
 
 
-void Catan::trade(Player player, int myResource, int otherResource, int myAmount, int otherAmount)
+void Catan::trade(Player *player, int myResource, int otherResource, int myAmount, int otherAmount)
 {
-    if(players[currentTurn].canTrade(myAmount,myResource) && player.canTrade(otherAmount,otherResource))
+    if(players[currentTurn]->canTrade(myAmount,myResource) && player->canTrade(otherAmount,otherResource))
     {
-        modifyResources(players[currentTurn],otherResource,otherAmount);
-        modifyResources(players[currentTurn],myResource,-myAmount);
-        modifyResources(player,myResource,myAmount);
-        modifyResources(player,otherResource,-otherAmount);
+        players[currentTurn]->modifyResources(otherResource,otherAmount);
+        players[currentTurn]->modifyResources(myResource,-myAmount);
+        player->modifyResources(myResource,myAmount);
+        player->modifyResources(otherResource,-otherAmount);
     }
-}
-
-void Catan::modifyResources(Player p, int myResource, int myAmount)
-{
-    p.modifyResources(myResource,myAmount);
 }
 
 void Catan::buyDevelopmentCard()
@@ -169,7 +165,7 @@ void Catan::buyDevelopmentCard()
     {
         this->knightsCount++;
     }
-    players[currentTurn].modifyResources(roll,1);
+    players[currentTurn]->modifyResources(roll,1);
 }
 
 void Catan::getCurrentPlayerCards()
@@ -182,12 +178,19 @@ void Catan::useDevelopmentCard(int card)
     switch (card)
     {
     case Constants::monopoly:
+        for(Player *player : this->players)
+        {
+            player->modifyResources(Constants::wood,-player->getResourceCount(Constants::wood)/2);
+            this->players[currentTurn]->modifyResources(Constants::wood,player->getResourceCount(Constants::wood)/2);
+        }
         break;
 
     case Constants::pleanty:
+        players[currentTurn]->modifyResources(Constants::wood,2);
         break;
 
     case Constants::builder:
+        this->placeRoad(Point(0,0),Point(0,1),true);
         break;
     
     default:
@@ -197,7 +200,7 @@ void Catan::useDevelopmentCard(int card)
 
 bool Catan::checkVictory()
 {
-    return this->players[currentTurn].getVictoryPoints()>=10;
+    return this->players[currentTurn]->getVictoryPoints()>=10;
 }
 
 void Catan::endTurn()
