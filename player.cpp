@@ -6,7 +6,13 @@ Player::Player(std::string name)
 }
 Player::~Player()
 {
-
+    this -> victoryPoints = 0;
+    this -> name;
+    for(Point settlement : settlements)
+    {
+        delete &settlement;
+    }
+    int resources[Constants::pleanty+1];
 }
 
 int Player::getVictoryPoints() const

@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "point.hpp"
 #include "constants.hpp"
-
+class Point;
 class Player
 {
 private:

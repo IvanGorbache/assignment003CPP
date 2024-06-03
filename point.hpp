@@ -2,31 +2,34 @@
 #include <vector>
 #include "constants.hpp"
 #include "player.hpp"
+class Player;
 class Point
 {
 private:
-    unsigned int id, x, y;
+     int id, x, y;
     Player* owner;
     int classification;
     std::vector<Point> neighbors;
     
 public:
     Point();
-    Point(unsigned int id, unsigned int x, unsigned int y, int classification);
-    Point(unsigned int x, unsigned int y);
+    Point( int id,  int x,  int y, int classification);
+    Point( int x,  int y);
     ~Point();
 
-    unsigned int getX() const;
-    unsigned int getY() const;
-    unsigned int getId() const;
+     int getX() const;
+     int getY() const;
+     int getId() const;
     Player* getOwner() const; 
     std::vector<Point> getNeighbors() const;
     int getClassification() const;
 
-    void setID(unsigned int id);
+    void setID( int id);
     void setOwner(Player *p);
 
     void addNeighbor(Point &newNeighbor);
     bool isNeighbor(Point a);
     void upgrade();
+
+    bool operator==(const Point& other) const;
 };

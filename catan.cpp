@@ -1,5 +1,7 @@
 #include "catan.hpp"
 
+#include "constants.hpp"
+
 Catan::Catan(Player *p1, Player *p2, Player *p3)
 {
     this->players[0] = p1;
@@ -40,11 +42,18 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
         }
     }
 }
+Catan::~Catan()
+{
+    for(Player *player : this->players)
+    {
+        delete player;
+    }
+}
 
 void Catan::rollDice(int cheat = 0)
 {
     Point* area[4];
-    unsigned int x, y;
+    int x, y;
     int roll = cheat, amount = 0;
     if (!cheat)
     {

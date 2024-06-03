@@ -1,4 +1,5 @@
-#include "catan.cpp"
+#include "catan.hpp"
+#include "player.hpp"
 
 int main()
 {

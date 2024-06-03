@@ -8,7 +8,7 @@ Point::Point()
     this->classification = Constants::empty;
     this->owner = NULL;
 }
-Point::Point(unsigned int id, unsigned int x, unsigned int y, int classification)
+Point::Point( int id,  int x,  int y, int classification)
 {
     this->id = id;
     this->x = x;
@@ -16,7 +16,7 @@ Point::Point(unsigned int id, unsigned int x, unsigned int y, int classification
     this->classification = classification;
     this->owner = NULL;
 }
-Point::Point(unsigned int x, unsigned int y)
+Point::Point( int x,  int y)
 {
     this->x = x;
     this->y = y;
@@ -26,15 +26,15 @@ Point::~Point()
 
 }
 
-unsigned int Point::getX() const
+ int Point::getX() const
 {
     return this->x;
 }
-unsigned int Point::getY() const
+ int Point::getY() const
 {
     return this->y;
 }
-unsigned int Point::getId() const
+ int Point::getId() const
 {
     return this->id;
 }
@@ -51,7 +51,7 @@ int Point::getClassification() const
     return this->classification;
 }
 
-void Point::setID(unsigned int id)
+void Point::setID( int id)
 {
     this->id = id;
 }
@@ -79,4 +79,8 @@ void Point::upgrade()
         this->classification = Constants::city;
     }
     
+}
+
+bool Point::operator==(const Point& other) const {
+    return (this->x == other.x && this->y == other.y && this->id == other.id); 
 }

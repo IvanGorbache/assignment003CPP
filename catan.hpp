@@ -7,7 +7,6 @@
 #include <iostream>
 #include <iomanip>
 
-#include "constants.hpp"
 
 
 class Catan
