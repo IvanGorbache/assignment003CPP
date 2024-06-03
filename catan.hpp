@@ -1,10 +1,14 @@
+#pragma once
+
 #include "player.hpp"
 #include "point.hpp"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
 #include <iomanip>
+
+#include "constants.hpp"
+
 
 class Catan
 {
@@ -19,7 +23,7 @@ public:
 
     ~Catan();
 
-    void rollDice(int cheat = 0);
+    void rollDice(int cheat);
 
     void placeSettelemnt(Point a);
 

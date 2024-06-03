@@ -29,7 +29,7 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
         for(int j = 0;j<11;j++)
         {
             map[i][j] = Point(0,i,j,originalMap[i][j]);
-            if(Constants::wood<=originalMap[i][j]<=Constants::wool)
+            if(Constants::wood<=originalMap[i][j] && originalMap[i][j]<=Constants::wool)
             {
                 map[i][j].setID(rand() % (12 - 2 + 1) + 2);
                 if(originalMap[i][j] == originalMap[i][j-1])
@@ -111,6 +111,10 @@ void Catan::placeSettelemnt(Point a)
 
 void Catan::placeRoad(Point a, Point b, bool isFree)
 {
+    if(players[currentTurn]->canTrade(Constants::wood,10)&&!isFree)
+    {
+        players[currentTurn]->modifyResources(Constants::wood,10);
+    }
     if(!a.isNeighbor(b))
     {
         if((Constants::empty<=a.getClassification() && a.getClassification()<=Constants::city)&&(Constants::empty<=b.getClassification() && b.getClassification()<=Constants::city))

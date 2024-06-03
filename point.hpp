@@ -1,6 +1,7 @@
+#pragma once
 #include <vector>
 #include "constants.hpp"
-class player;
+#include "player.hpp"
 class Point
 {
 private:

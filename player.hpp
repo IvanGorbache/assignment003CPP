@@ -1,7 +1,10 @@
+#pragma once
+
 #include <string>
 #include <vector>
-#include "constants.hpp"
+#include <algorithm>
 #include "point.hpp"
+#include "constants.hpp"
 
 class Player
 {
