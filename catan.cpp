@@ -7,8 +7,9 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
     this->players[0] = p1;
     this->players[1] = p2;
     this->players[2] = p3;
-
-    std::fill_n(this->firstTurn, 3, false);
+    minCard = Constants::knight;
+    maxCard = Constants::victoryCard;
+    std::fill_n(this->tutnCounter, 3, 0);
 
     int originalMap[12][11]= 
     {
@@ -26,18 +27,27 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
         {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
     };
 
+    std::random_device rd; // Random device to seed the generator
+    std::mt19937 gen(rd()); // Mersenne Twister generator seeded with random device
+    std::uniform_int_distribution<> dis(2, 12);
     for(int i = 0;i<12;i++)
     {
         for(int j = 0;j<11;j++)
         {
-            map[i][j] = Point(0,i,j,originalMap[i][j]);
-            if(Constants::wood<=originalMap[i][j] && originalMap[i][j]<=Constants::wool)
+            if(Constants::wood<=originalMap[i][j] && originalMap[i][j]<=Constants::wool )
             {
-                map[i][j].setID(rand() % (12 - 2 + 1) + 2);
-                if(originalMap[i][j] == originalMap[i][j-1])
+                if(originalMap[i][j] == originalMap[i-1][j])
                 {
-                    map[i][j-1] = map[i][j]; 
+                    map[i][j] = map[i-1][j];
                 }
+                else
+                {
+                    map[i][j] = Point(dis(gen),i,j,originalMap[i][j]);
+                }
+            }
+            else
+            {
+                map[i][j] = Point(0,i,j,originalMap[i][j]);
             }
         }
     }
@@ -50,7 +60,7 @@ Catan::~Catan()
     }
 }
 
-void Catan::rollDice(int cheat = 0)
+void Catan::rollDice(int cheat)
 {
     Point* area[4];
     int x, y;
@@ -87,67 +97,87 @@ void Catan::rollDice(int cheat = 0)
 
 void Catan::placeSettelemnt(Point a)
 {
-    bool canPlace = false;
-    if(a.getClassification() == Constants::empty)
+    bool canPlace = true;
+    if(map[a.getX()][a.getY()].getOwner() == NULL && map[a.getX()][a.getY()].getClassification() == Constants::empty && (map[a.getX()][a.getY()].getNeighbors().size()>0 || tutnCounter[currentTurn]<1))
     {
-        if(a.getOwner() == NULL && a.getClassification() == Constants::empty && a.getNeighbors().size()>0)
+        for(Point neighbor : map[a.getX()][a.getY()].getNeighbors())
         {
-            for(Point neighbor : a.getNeighbors())
+            if(neighbor.getClassification() == Constants::empty)
             {
-                if(neighbor.getClassification() == Constants::empty)
+                for(Point outerNeighbor : neighbor.getNeighbors())
                 {
-                    for(Point outerNeighbor : neighbor.getNeighbors())
+                    if(outerNeighbor.getClassification()!=Constants::empty)
                     {
-                        if(outerNeighbor.getClassification()!=Constants::empty)
-                        {
-                            canPlace = true;
-                        }
+                        canPlace = true;
                     }
                 }
-                else
-                {
-                    canPlace = false;
-                }
-                
             }
-            if(canPlace)
-            {
-                map[a.getX()][a.getY()].upgrade();
+            else
+            {   
+                canPlace = false;
             }
         }
+    }
+    else
+    {
+        canPlace = false;
+    }
+    
+    if(canPlace && ((players[currentTurn]->canTrade(Constants::brick,1) && players[currentTurn]->canTrade(Constants::wood,1) && players[currentTurn]->canTrade(Constants::wool,1)&& players[currentTurn]->canTrade(Constants::wheat,1)) || tutnCounter[currentTurn]<1))
+    {
+        map[a.getX()][a.getY()].setOwner(players[currentTurn]);
+        map[a.getX()][a.getY()].upgrade();
+        players[currentTurn]->modifyVictoryPoints(1);
+        if(!(tutnCounter[currentTurn]<1))
+        {
+            players[this->currentTurn]->modifyResources(Constants::wood,-1);
+            players[this->currentTurn]->modifyResources(Constants::brick,-1);
+            players[this->currentTurn]->modifyResources(Constants::wool,-1);
+            players[this->currentTurn]->modifyResources(Constants::wheat,-1);
+        }
+    }
+}
+
+void Catan::buildCity(Point a)
+{
+    if(map[a.getX()][a.getY()].getOwner() == players[currentTurn] && map[a.getX()][a.getY()].getClassification()==Constants::settlement&& players[currentTurn]->canTrade(Constants::iron,3)&& players[currentTurn]->canTrade(Constants::wheat,2))
+    {
+        map[a.getX()][a.getY()].upgrade();
+        players[currentTurn]->modifyVictoryPoints(1);
+        players[this->currentTurn]->modifyResources(Constants::iron,-3);
+        players[this->currentTurn]->modifyResources(Constants::wheat,-2);
     }
 }
 
 void Catan::placeRoad(Point a, Point b, bool isFree)
 {
-    if(players[currentTurn]->canTrade(Constants::wood,10)&&!isFree)
+    bool canPlace = false;
+    if(!map[a.getX()][a.getY()].isNeighbor(map[b.getX()][b.getY()]))
     {
-        players[currentTurn]->modifyResources(Constants::wood,10);
-    }
-    if(!a.isNeighbor(b))
-    {
-        if((Constants::empty<=a.getClassification() && a.getClassification()<=Constants::city)&&(Constants::empty<=b.getClassification() && b.getClassification()<=Constants::city))
+        if((Constants::empty<=map[a.getX()][a.getY()].getClassification() && map[a.getX()][a.getY()].getClassification()<=Constants::city)&&(Constants::empty<=map[b.getX()][b.getY()].getClassification() && map[b.getX()][b.getY()].getClassification()<=Constants::city))
         {
-            if(((a.getOwner() != NULL)&&(b.getOwner() == NULL)) || ((a.getOwner() == NULL)&&(b.getOwner() != NULL)))
+            if(((map[a.getX()][a.getY()].getOwner() != NULL)&&(map[b.getX()][b.getY()].getOwner() == NULL)) || ((map[a.getX()][a.getY()].getOwner() == NULL)&&(map[b.getX()][b.getY()].getOwner() != NULL)))
             {
-                if(a.getOwner() == players[currentTurn] || b.getOwner() == players[currentTurn])
-                {
-                    a.addNeighbor(b);
-                    a.setOwner(players[currentTurn]);
-
-                    b.addNeighbor(a);
-                    b.setOwner(players[currentTurn]);
-                }
+                canPlace = true;
             }
-            else if (((a.getOwner() != NULL)&&(b.getOwner() != NULL)) && ((a.getOwner() == b.getOwner())))
+            else if (((map[a.getX()][a.getY()].getOwner() != NULL)&&(map[b.getX()][b.getY()].getOwner() != NULL)) && ((map[a.getX()][a.getY()].getOwner() == map[b.getX()][b.getY()].getOwner())))
             {
-                a.addNeighbor(b);
-                a.setOwner(players[currentTurn]);
-
-                b.addNeighbor(a);
-                b.setOwner(players[currentTurn]);
+                canPlace = true;
+                
             }
         }    
+    }
+    if(canPlace && ((players[currentTurn]->canTrade(Constants::wood,1)&&players[currentTurn]->canTrade(Constants::brick,1))||tutnCounter[currentTurn]<1||isFree))
+    {
+        map[a.getX()][a.getY()].addNeighbor(map[b.getX()][b.getY()]);
+
+        map[b.getX()][b.getY()].addNeighbor(map[a.getX()][a.getY()]);
+
+        if(!(tutnCounter[currentTurn]<1||isFree))
+        {
+            players[this->currentTurn]->modifyResources(Constants::wood,-1);
+            players[this->currentTurn]->modifyResources(Constants::brick,-1);
+        }
     }
 }
 
@@ -156,29 +186,71 @@ void Catan::trade(Player *player, int myResource, int otherResource, int myAmoun
 {
     if(players[currentTurn]->canTrade(myAmount,myResource) && player->canTrade(otherAmount,otherResource))
     {
+        if(myResource==Constants::knight && players[currentTurn]->getResourceCount(Constants::knight)==3)
+        {
+            players[currentTurn]->modifyVictoryPoints(-1);
+            if(player->getResourceCount(Constants::knight)+myResource==3)
+            {
+                player->modifyVictoryPoints(1);
+            }
+        }
+
+        if(otherResource==Constants::knight && player->getResourceCount(Constants::knight)==3)
+        {
+            player->modifyVictoryPoints(-1);
+            if(players[currentTurn]->getResourceCount(Constants::knight)+otherAmount==3)
+            {
+                players[currentTurn]->modifyVictoryPoints(1);
+            }
+        }
+
+        if(myResource==Constants::victoryCard)
+        {
+            players[currentTurn]->modifyVictoryPoints(-myAmount);
+            player->modifyVictoryPoints(myAmount);
+        }
+
+        if(otherResource==Constants::victoryCard)
+        {
+            player->modifyVictoryPoints(-otherAmount);
+            players[currentTurn]->modifyVictoryPoints(otherAmount);
+        }
+        
         players[currentTurn]->modifyResources(otherResource,otherAmount);
         players[currentTurn]->modifyResources(myResource,-myAmount);
         player->modifyResources(myResource,myAmount);
         player->modifyResources(otherResource,-otherAmount);
+
+
     }
 }
 
 void Catan::buyDevelopmentCard()
 {
-    int roll = 0;
-    if(this->knightsCount<3)
+    if(players[currentTurn]->canTrade(Constants::iron,1),players[currentTurn]->canTrade(Constants::wool,1),players[currentTurn]->canTrade(Constants::wheat,1))
     {
-        roll = rand() % (Constants::victoryCard - Constants::knight + 1) + Constants::knight;
+        int roll = rand() % (this->maxCard- this->minCard + 1) + this->minCard;
+        if(roll==Constants::knight)
+        {
+            this->knightsCount++;
+            if(knightsCount==3)
+            {
+                players[currentTurn]->modifyVictoryPoints(1);
+                minCard++;
+            }
+        }
+        if (roll==Constants::victoryCard)
+        {
+            this->victoryCardCount++;
+            players[currentTurn]->modifyVictoryPoints(1);
+            if (victoryCardCount==5)
+            {
+                maxCard--;
+            }
+        }
+        players[currentTurn]->modifyResources(roll,1);
+        
     }
-    else
-    {
-        roll = rand() % (Constants::victoryCard - Constants::knight + 1) + Constants::knight;
-    }
-    if(roll==Constants::knight)
-    {
-        this->knightsCount++;
-    }
-    players[currentTurn]->modifyResources(roll,1);
 }
 
 void Catan::getCurrentPlayerCards()
@@ -218,13 +290,15 @@ bool Catan::checkVictory()
 
 void Catan::endTurn()
 {
+    this->tutnCounter[currentTurn]++;
     this->currentTurn = (this->currentTurn+1)%3;
 }
 
 void Catan::printMap() const {
     for (int i = 0; i < 12; ++i) {
         for (int j = 0; j < 11; ++j) {
-            std::cout << std::setw(8);
+            std::cout << std::setw(11);
+            std::cout << map[i][j].getId();
             switch (map[i][j].getClassification()) {
                 case Constants::sea:
                     std::cout << "SEA";

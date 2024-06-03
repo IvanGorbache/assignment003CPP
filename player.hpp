@@ -22,4 +22,5 @@ public:
     bool canTrade(int resource, int amount);
     void modifyResources(int myResource, int myAmount);
     int getResourceCount(int resource);
+    void modifyVictoryPoints(int count);
 };

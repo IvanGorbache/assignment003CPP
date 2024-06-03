@@ -6,25 +6,31 @@
 #include <stdio.h>
 #include <iostream>
 #include <iomanip>
-
+#include <algorithm> 
+#include <random>   
+#include <ctime> 
 
 
 class Catan
 {
 private:
     Player *players[3];
-    bool firstTurn[3];
+    int tutnCounter[3];
     Point map[12][11];
     int currentTurn;
-    int knightsCount;
+    int knightsCount, victoryCardCount;
+    int minCard,maxCard;
+
 public:
     Catan(Player *p1, Player *p2, Player *p3);
 
     ~Catan();
 
-    void rollDice(int cheat);
+    void rollDice(int cheat = 0);
 
     void placeSettelemnt(Point a);
+
+    void buildCity(Point a);
 
     void placeRoad(Point a, Point b, bool isFree);
 

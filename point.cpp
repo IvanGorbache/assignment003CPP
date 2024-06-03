@@ -60,6 +60,11 @@ void Point::setOwner(Player *p)
     this->owner = p;
 }
 
+void Point::setClassification(int classification)
+{
+    this->classification = classification;
+}
+
 void Point::addNeighbor(Point &newNeighbor)
 {
     this->neighbors.push_back(newNeighbor);

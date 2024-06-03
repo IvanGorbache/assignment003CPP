@@ -17,15 +17,16 @@ public:
     Point( int x,  int y);
     ~Point();
 
-     int getX() const;
-     int getY() const;
-     int getId() const;
+    int getX() const;
+    int getY() const;
+    int getId() const;
     Player* getOwner() const; 
     std::vector<Point> getNeighbors() const;
     int getClassification() const;
 
     void setID( int id);
     void setOwner(Player *p);
+    void setClassification(int classification);
 
     void addNeighbor(Point &newNeighbor);
     bool isNeighbor(Point a);
