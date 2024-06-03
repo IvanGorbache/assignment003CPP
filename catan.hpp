@@ -13,8 +13,7 @@ private:
     Player players[3];
     bool firstTurn[3];
     Point map[12][11];
-    int currentTurn;
-    int knightsCount;
+    int currentTurn, knightsCount, victoryCardCount;
 public:
     Catan(Player p1, Player p2, Player p3);
 
