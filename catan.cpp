@@ -23,11 +23,12 @@ Catan::Catan(Player p1, Player p2, Player p3)
         {Constants::sea, Constants::sea, Constants::empty, Constants::wood, Constants::empty, Constants::wheat, Constants::empty, Constants::wool, Constants::empty, Constants::sea, Constants::sea},
         {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
     };
+
     for(int i = 0;i<12;i++)
     {
         for(int j = 0;j<11;j++)
         {
-            map[i][j] = Point(0,i,j,originalMap[i][j],Constants::icons[originalMap[i][j]]);
+            map[i][j] = Point(0,i,j,originalMap[i][j]);
             if(Constants::wood<=originalMap[i][j]<=Constants::wool)
             {
                 map[i][j].setID(rand() % (12 - 2 + 1) + 2);
@@ -38,8 +39,6 @@ Catan::Catan(Player p1, Player p2, Player p3)
             }
         }
     }
-    this->victoryCardCount = 0;
-    this->knightsCount = 0;
 }
 
 void Catan::rollDice(int cheat=0)
@@ -170,7 +169,7 @@ void Catan::buyDevelopmentCard()
     {
         this->knightsCount++;
     }
-    players[currentTurn].modifyCards(roll,1);
+    players[currentTurn].modifyResources(roll,1);
 }
 
 void Catan::getCurrentPlayerCards()
@@ -180,10 +179,19 @@ void Catan::getCurrentPlayerCards()
 
 void Catan::useDevelopmentCard(int card)
 {
-    if(this->players[this->currentPlayer].getDeck()[card]>0)
+    switch (card)
     {
-        this->players[this->currentPlayer].getDeck()[card][0]();
-        players[this->currentPlayer].(card, 1);
+    case Constants::monopoly:
+        break;
+
+    case Constants::pleanty:
+        break;
+
+    case Constants::builder:
+        break;
+    
+    default:
+        break;
     }
 }
 
@@ -201,7 +209,35 @@ void Catan::printMap() const {
     for (int i = 0; i < 12; ++i) {
         for (int j = 0; j < 11; ++j) {
             std::cout << std::setw(8);
-            std::cout << map[i][j].getSymbol();
+            switch (map[i][j].getClassification()) {
+                case Constants::sea:
+                    std::cout << "SEA";
+                    break;
+                case Constants::empty:
+                    std::cout << "EMPTY";
+                    break;
+                case Constants::iron:
+                    std::cout << "IRON";
+                    break;
+                case Constants::wool:
+                    std::cout << "WOOL";
+                    break;
+                case Constants::wood:
+                    std::cout << "WOOD";
+                    break;
+                case Constants::wheat:
+                    std::cout << "WHEAT";
+                    break;
+                case Constants::brick:
+                    std::cout << "BRICK";
+                    break;
+                case Constants::desert:
+                    std::cout << "DESERT";
+                    break;
+                default:
+                    std::cout << "UNKNOWN";
+                    break;
+            }
         }
         std::cout << std::endl;
     }
