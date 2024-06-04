@@ -12,7 +12,7 @@ private:
     int victoryPoints;
     std::string name;
     std::vector<Point> settlements;
-    int resources[Constants::pleanty+1];
+    int resources[Constants::inventorySize];
     int totalResources;
 public:
     Player(std::string name);
