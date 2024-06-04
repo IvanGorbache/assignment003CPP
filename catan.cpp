@@ -26,10 +26,9 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
         {Constants::sea, Constants::sea, Constants::empty, Constants::wood, Constants::empty, Constants::wheat, Constants::empty, Constants::wool, Constants::empty, Constants::sea, Constants::sea},
         {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
     };
-
-    std::random_device rd; // Random device to seed the generator
-    std::mt19937 gen(rd()); // Mersenne Twister generator seeded with random device
-    std::uniform_int_distribution<> dis(2, 12);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1, 12);
     for(int i = 0;i<12;i++)
     {
         for(int j = 0;j<11;j++)
@@ -63,11 +62,16 @@ Catan::~Catan()
 void Catan::rollDice(int cheat)
 {
     Point* area[4];
-    int x, y;
+    int x, y, discard;
     int roll = cheat, amount = 0;
+    std::random_device r1;
+    std::mt19937 gen1(r1());
+    std::random_device r2;
+    std::mt19937 gen2(r2());
+    std::uniform_int_distribution<> dis(1, 6);
     if (!cheat)
     {
-        roll = rand() % (12 - 2 + 1) + 2; 
+        roll = dis(gen1)+dis(gen2);
     }
 
     for (Player *player : this->players)
@@ -92,21 +96,32 @@ void Catan::rollDice(int cheat)
             }
         }
     }
+    if (roll==7)
+    {
+        for (Player *player : this->players)
+        {
+            if(player->getTotalResources()>=7)
+            {
+                discard = player->getTotalResources()/2;
+                //ADD PLAYER INPUT HERE
+            }
+        }
+    }
 }
 
 
 void Catan::placeSettelemnt(Point a)
 {
     bool canPlace = true;
-    if(map[a.getX()][a.getY()].getOwner() == NULL && map[a.getX()][a.getY()].getClassification() == Constants::empty && (map[a.getX()][a.getY()].getNeighbors().size()>0 || tutnCounter[currentTurn]<1))
+    if((map[a.getX()][a.getY()].getOwner() == NULL || map[a.getX()][a.getY()].getOwner() == players[currentTurn]) && map[a.getX()][a.getY()].getClassification() == Constants::empty && (map[a.getX()][a.getY()].getNeighbors().size()>0 || tutnCounter[currentTurn]<1))
     {
         for(Point neighbor : map[a.getX()][a.getY()].getNeighbors())
         {
-            if(neighbor.getClassification() == Constants::empty)
+            if((neighbor.getClassification() == Constants::empty) && (neighbor.getOwner() == map[a.getX()][a.getY()].getOwner()))
             {
                 for(Point outerNeighbor : neighbor.getNeighbors())
                 {
-                    if(outerNeighbor.getClassification()!=Constants::empty)
+                    if(outerNeighbor.getClassification()!=Constants::empty && (outerNeighbor.getOwner() == map[a.getX()][a.getY()].getOwner()))
                     {
                         canPlace = true;
                     }
@@ -178,6 +193,15 @@ void Catan::placeRoad(Point a, Point b, bool isFree)
             players[this->currentTurn]->modifyResources(Constants::wood,-1);
             players[this->currentTurn]->modifyResources(Constants::brick,-1);
         }
+
+        if((map[a.getX()][a.getY()].getOwner() != NULL)&&(map[b.getX()][b.getY()].getOwner() == NULL))
+        {
+            map[b.getX()][b.getY()].setOwner(map[a.getX()][a.getY()].getOwner());
+        }
+        else if((map[a.getX()][a.getY()].getOwner() == NULL)&&(map[b.getX()][b.getY()].getOwner() != NULL))
+        {
+            map[a.getX()][a.getY()].setOwner(map[b.getX()][b.getY()].getOwner());
+        }
     }
 }
 
@@ -229,7 +253,10 @@ void Catan::buyDevelopmentCard()
 {
     if(players[currentTurn]->canTrade(Constants::iron,1),players[currentTurn]->canTrade(Constants::wool,1),players[currentTurn]->canTrade(Constants::wheat,1))
     {
-        int roll = rand() % (this->maxCard- this->minCard + 1) + this->minCard;
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(minCard, maxCard);
+        int roll = dis(gen);
         if(roll==Constants::knight)
         {
             this->knightsCount++;

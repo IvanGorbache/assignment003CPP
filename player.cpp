@@ -23,6 +23,10 @@ bool Player::canTrade(int resource, int amount)
 void Player::modifyResources(int myResource, int myAmount)
 {
     this->resources[myResource]+=myAmount;
+    if(Constants::wood<=myResource && myResource<=Constants::wool)
+    {
+        this->totalResources+=myAmount;
+    }
 }
 int Player::getResourceCount(int resource)
 {
@@ -31,4 +35,8 @@ int Player::getResourceCount(int resource)
 void Player::modifyVictoryPoints(int count)
 {
     this->victoryPoints+=count;
+}
+int Player::getTotalResources() const
+{
+    return this->totalResources;
 }

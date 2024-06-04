@@ -13,10 +13,12 @@ private:
     std::string name;
     std::vector<Point> settlements;
     int resources[Constants::pleanty+1];
+    int totalResources;
 public:
     Player(std::string name);
     ~Player();
 
+    int getTotalResources() const;
     int getVictoryPoints() const;
     std::vector<Point> getSettlements() const;
     bool canTrade(int resource, int amount);
