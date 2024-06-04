@@ -10,7 +10,9 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
     minCard = Constants::knight;
     maxCard = Constants::victoryCard;
     std::fill_n(this->tutnCounter, 3, 0);
-
+    std::vector<Point> points;
+    int biomCount[] = {1,4,3,3,4,4};
+    int rand = 0;
     int originalMap[12][11]= 
     {
         {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
@@ -26,27 +28,29 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
         {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
         {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
     };
-
-    std::random_device rdt;
-    std::mt19937 gent(rdt());
-    std::uniform_int_distribution<> dist(Constants::desert, Constants::wool);
-    for(int i = 0;i<12;i++)
+    for(int i = 1;i<12;i+=2)
     {
         for(int j = 0;j<11;j++)
         {
             if(originalMap[i][j]==Constants::temp)
             {
-                originalMap[i][j] = dist(gent);
-                if(originalMap[i+1][j]==Constants::temp)
-                {
-                    originalMap[i+1][j] = originalMap[i][j];
-                }
+                points.push_back(Point(i,j));
             }
         }
     }
-
     std::random_device rd;
     std::mt19937 gen(rd());
+    for (int i = 0; i < 7; i++)
+    {
+        for (int j = 0; j < biomCount[i]; j++)
+        {
+            std::uniform_int_distribution<> dis(0, points.size()-1);
+            rand = dis(gen);
+            originalMap[points[rand].getX()][points[rand].getY()] = i + Constants::desert;
+            originalMap[points[rand].getX()+1][points[rand].getY()] = i + Constants::desert;
+            points.erase(points.begin()+rand);
+        }        
+    }
     std::uniform_int_distribution<> dis(1, 12);
     for(int i = 0;i<12;i++)
     {
@@ -69,7 +73,6 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
             }
         }
     }
-
 }
 Catan::~Catan()
 {
