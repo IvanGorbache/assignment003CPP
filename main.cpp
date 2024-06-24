@@ -20,5 +20,25 @@ int main()
     c.printMap();
     c.rollDice(5);
     std::cout<<"//////////////\n";
+    c.endTurn();
+    c.printMap();
+    std::cout<<"//////////////\n";
+    c.placeSettelemnt(Point(0,7));
+    c.placeRoad(Point(1,6),Point(0,7),true);
+    c.placeRoad(Point(1,8),Point(0,7),true);
+    c.placeRoad(Point(1,8),Point(2,8),true);
+    c.placeSettelemnt(Point(0,3));
+    c.printMap();
+    c.rollDice(5);
+    c.rollDice(5);
+    c.rollDice(5);
+    c.rollDice(5);
+    c.rollDice(5);
+    c.rollDice(5);
+    c.rollDice(5);
+    c.rollDice(5);
+    c.rollDice(5);
+    c.rollDice(7);
+
     return 0;
 }

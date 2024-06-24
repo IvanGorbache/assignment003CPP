@@ -122,7 +122,6 @@ void Catan::rollDice(int cheat)
     {
         roll = dis(gen1)+dis(gen1);
     }
-    std::cout<<roll;
 
     for (Player *player : this->players)
     {
@@ -141,7 +140,7 @@ void Catan::rollDice(int cheat)
             {
                 if (p != NULL && p->getId() == roll)
                 {
-                    player->modifyResources(p->getClassification()+Constants::wood,amount);
+                    player->modifyResources(p->getClassification(),amount);
                 }
             }
         }
@@ -158,12 +157,15 @@ void Catan::rollDice(int cheat)
                 {
                     while (discard>0 && player->getResourceCount(i+Constants::wood)>0)
                     {
-                        player->modifyResources(i+Constants::wood,-i);
+                        player->modifyResources(i+Constants::wood,-1);
+                        discard-=1;
                     }
                     
                 }
             }
+            player->printer();
         }
+
     }
 }
 

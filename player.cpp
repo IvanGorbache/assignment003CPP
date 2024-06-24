@@ -33,11 +33,12 @@ bool Player::canTrade(int resourceType, int amount)
 
 void Player::modifyResources(int myResource, int myAmount)
 {
-    myResource -= Constants::wood;
-    this->resources[myResource] += myAmount;
-    if (Constants::wood <= myResource && myResource <= Constants::wool)
+
+    if (Constants::wood <= myResource && myResource <= Constants::victoryCard)
     {
+        myResource -= Constants::wood;
         this->totalResources += myAmount;
+        this->resources[myResource] += myAmount;
     }
 }
 
@@ -68,7 +69,7 @@ void Player::printer()
 
     for (int i = 0; i < Constants::inventorySize; i++)
     {
-        std::cout << Constants::gameResource[i+Constants::wood] << ": " << this->resources[i] << " ";
+        std::cout << Constants::gameResourceIcons[i+Constants::wood] << ":" << this->resources[i] << " ";
     }
     std::cout << "\n";
 }
