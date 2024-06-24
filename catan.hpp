@@ -37,11 +37,11 @@ public:
 
     void trade(Player *player, int myResource, int otherResource, int myAmount, int otherAmount);
 
-    void buyDevelopmentCard();
+    void buyDevelopmentCard(int choice = 0);
 
     void getCurrentPlayerCards();
 
-    void useDevelopmentCard(int card);
+    void useDevelopmentCard(int card=0,int resource=0,int x=0, int y=0,int u=0,int v=0);
 
     bool checkVictory();
 

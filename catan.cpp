@@ -269,8 +269,9 @@ void Catan::placeRoad(Point a, Point b, bool isFree)
 
 void Catan::trade(Player *player, int myResource, int otherResource, int myAmount, int otherAmount)
 {
-    if(players[currentTurn]->canTrade(myAmount,myResource) && player->canTrade(otherAmount,otherResource))
+    if(players[currentTurn]->canTrade(myResource,myAmount) && player->canTrade(otherResource,otherAmount))
     {
+        
         if(myResource==Constants::knight && players[currentTurn]->getResourceCount(Constants::knight)==3)
         {
             players[currentTurn]->modifyVictoryPoints(-1);
@@ -310,14 +311,19 @@ void Catan::trade(Player *player, int myResource, int otherResource, int myAmoun
     }
 }
 
-void Catan::buyDevelopmentCard()
+void Catan::buyDevelopmentCard(int choice)
 {
     if(players[currentTurn]->canTrade(Constants::iron,1),players[currentTurn]->canTrade(Constants::wool,1),players[currentTurn]->canTrade(Constants::wheat,1))
     {
         std::random_device rd;
         std::mt19937 gen(rd());
         std::uniform_int_distribution<> dis(minCard, maxCard);
-        int roll = dis(gen);
+        int roll = choice;
+        if (choice == 0)
+        {
+            roll = dis(gen);
+        }
+        
         if(roll==Constants::knight)
         {
             this->knightsCount++;
@@ -337,6 +343,9 @@ void Catan::buyDevelopmentCard()
             }
         }
         players[currentTurn]->modifyResources(roll,1);
+        players[currentTurn]->modifyResources(Constants::wheat,-1);
+        players[currentTurn]->modifyResources(Constants::wool,-1);
+        players[currentTurn]->modifyResources(Constants::iron,-1);
         
     }
 }
@@ -346,24 +355,28 @@ void Catan::getCurrentPlayerCards()
     
 }
 
-void Catan::useDevelopmentCard(int card)
+void Catan::useDevelopmentCard(int card,int resource,int x, int y,int u,int v)
 {
     switch (card)
     {
     case Constants::monopoly:
         for(Player *player : this->players)
         {
-            player->modifyResources(Constants::wood,-player->getResourceCount(Constants::wood)/2);
-            this->players[currentTurn]->modifyResources(Constants::wood,player->getResourceCount(Constants::wood)/2);
+            if(player!=players[currentTurn])
+            {
+                this->players[currentTurn]->modifyResources(resource,player->getResourceCount(resource)/2);
+                player->modifyResources(resource,-player->getResourceCount(resource)/2);
+
+            }
         }
         break;
 
     case Constants::pleanty:
-        players[currentTurn]->modifyResources(Constants::wood,2);
+        players[currentTurn]->modifyResources(resource,2);
         break;
 
     case Constants::builder:
-        this->placeRoad(Point(0,0),Point(0,1),true);
+        this->placeRoad(Point(x,y),Point(u,v),true);
         break;
     
     default:

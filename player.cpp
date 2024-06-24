@@ -28,6 +28,7 @@ void Player::addSettlements(Point settlement)
 bool Player::canTrade(int resourceType, int amount)
 {
     resourceType -= Constants::wood;
+    std::cout<<resourceType;
     return this->resources[resourceType] >= amount;
 }
 
