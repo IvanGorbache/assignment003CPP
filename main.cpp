@@ -74,6 +74,9 @@ int main()
     c.trade(&p2,Constants::wood,Constants::iron,39,4);
     p1.printer();
     p2.printer();
+    c.buildCity(Point(0,7));
+    p1.printer();
+    c.printMap();
 
     return 0;
 }

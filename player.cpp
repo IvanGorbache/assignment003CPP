@@ -72,5 +72,5 @@ void Player::printer()
     {
         std::cout << Constants::gameResourceIcons[i+Constants::wood] << ":" << this->resources[i] << " ";
     }
-    std::cout << "\n";
+    std::cout << this->victoryPoints<<" \n";
 }
