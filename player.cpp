@@ -18,10 +18,12 @@ std::vector<Point> Player::getSettlements() const
 }
 bool Player::canTrade(int resource, int amount)
 {
+    resource-=-Constants::wood;
     return this->resources[resource]>=amount;
 }
 void Player::modifyResources(int myResource, int myAmount)
 {
+    myResource-=-Constants::wood;
     this->resources[myResource]+=myAmount;
     if(Constants::wood<=myResource && myResource<=Constants::wool)
     {
@@ -30,6 +32,7 @@ void Player::modifyResources(int myResource, int myAmount)
 }
 int Player::getResourceCount(int resource)
 {
+    resource-=-Constants::wood;
     return this->resources[resource];
 }
 void Player::modifyVictoryPoints(int count)

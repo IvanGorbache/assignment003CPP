@@ -16,13 +16,14 @@ class Catan
 private:
     Player *players[3];
     int tutnCounter[3];
+    int originalMap[12][11];
     Point map[12][11];
     int currentTurn;
     int knightsCount, victoryCardCount;
     int minCard,maxCard;
 
 public:
-    Catan(Player *p1, Player *p2, Player *p3);
+    Catan(Player *p1, Player *p2, Player *p3, bool useDefault,int defaultRoll=5);
 
     ~Catan();
 

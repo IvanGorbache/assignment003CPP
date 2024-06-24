@@ -2,7 +2,7 @@
 
 #include "constants.hpp"
 
-Catan::Catan(Player *p1, Player *p2, Player *p3)
+Catan::Catan(Player *p1, Player *p2, Player *p3, bool useDefault, int defaultRoll)
 {
     this->players[0] = p1;
     this->players[1] = p2;
@@ -13,44 +13,67 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
     std::vector<Point> points;
     int biomCount[] = {1,4,3,3,4,4};
     int rand = 0;
-    int originalMap[12][11]= 
-    {
-        {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
-        {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
-        {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
-        {Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea},
-        {Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea},
-        {Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty},
-        {Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty},
-        {Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea},
-        {Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea},
-        {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
-        {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
-        {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
-    };
-    for(int i = 1;i<12;i+=2)
-    {
-        for(int j = 0;j<11;j++)
-        {
-            if(originalMap[i][j]==Constants::temp)
-            {
-                points.push_back(Point(i,j));
-            }
-        }
-    }
+    int originalMap[12][11];
     std::random_device rd;
     std::mt19937 gen(rd());
-    for (int i = 0; i < 7; i++)
+    if(useDefault)
     {
-        for (int j = 0; j < biomCount[i]; j++)
+        int originalMap[12][11]= 
         {
-            std::uniform_int_distribution<> dis(0, points.size()-1);
-            rand = dis(gen);
-            originalMap[points[rand].getX()][points[rand].getY()] = i + Constants::desert;
-            originalMap[points[rand].getX()+1][points[rand].getY()] = i + Constants::desert;
-            points.erase(points.begin()+rand);
-        }        
+            {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::empty, Constants::iron, Constants::empty, Constants::wool, Constants::empty, Constants::wood, Constants::empty, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::empty, Constants::iron, Constants::empty, Constants::wool, Constants::empty, Constants::wood, Constants::empty, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::empty, Constants::wheat, Constants::empty, Constants::brick, Constants::empty, Constants::wool, Constants::empty, Constants::brick, Constants::empty, Constants::sea},
+            {Constants::sea, Constants::empty, Constants::wheat, Constants::empty, Constants::brick, Constants::empty, Constants::wool, Constants::empty, Constants::brick, Constants::empty, Constants::sea},
+            {Constants::empty, Constants::wheat, Constants::empty, Constants::wood, Constants::empty, Constants::desert, Constants::empty, Constants::wood, Constants::empty, Constants::iron, Constants::empty},
+            {Constants::empty, Constants::wheat, Constants::empty, Constants::wood, Constants::empty, Constants::desert, Constants::empty, Constants::wood, Constants::empty, Constants::iron, Constants::empty},
+            {Constants::sea, Constants::empty, Constants::wood, Constants::empty, Constants::iron, Constants::empty, Constants::wheat, Constants::empty, Constants::wool, Constants::empty, Constants::sea},
+            {Constants::sea, Constants::empty, Constants::wood, Constants::empty, Constants::iron, Constants::empty, Constants::wheat, Constants::empty, Constants::wool, Constants::empty, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::empty, Constants::wood, Constants::empty, Constants::wheat, Constants::empty, Constants::wool, Constants::empty, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::empty, Constants::wood, Constants::empty, Constants::wheat, Constants::empty, Constants::wool, Constants::empty, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
+        };
     }
+    else
+    {
+        int originalMap[12][11]= 
+        {
+            {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea},
+            {Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea},
+            {Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty},
+            {Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty},
+            {Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea},
+            {Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
+            {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
+        };
+        for(int i = 1;i<12;i+=2)
+        {
+            for(int j = 0;j<11;j++)
+            {
+                if(originalMap[i][j]==Constants::temp)
+                {
+                    points.push_back(Point(i,j));
+                }
+            }
+        }        
+        for (int i = 0; i < 7; i++)
+        {
+            for (int j = 0; j < biomCount[i]; j++)
+            {
+                std::uniform_int_distribution<> dis(0, points.size()-1);
+                rand = dis(gen);
+                originalMap[points[rand].getX()][points[rand].getY()] = i + Constants::desert;
+                originalMap[points[rand].getX()+1][points[rand].getY()] = i + Constants::desert;
+                points.erase(points.begin()+rand);
+            }        
+        }
+    }
+
     std::uniform_int_distribution<> dis(1, 12);
     for(int i = 0;i<12;i++)
     {
@@ -64,7 +87,15 @@ Catan::Catan(Player *p1, Player *p2, Player *p3)
                 }
                 else
                 {
-                    map[i][j] = Point(dis(gen),i,j,originalMap[i][j]);
+                    if(useDefault)
+                    {
+                        rand = defaultRoll;
+                    }
+                    else
+                    {
+                        rand = dis(gen);
+                    }
+                    map[i][j] = Point(rand,i,j,originalMap[i][j]);
                 }
             }
             else
@@ -89,12 +120,10 @@ void Catan::rollDice(int cheat)
     int roll = cheat, amount = 0;
     std::random_device r1;
     std::mt19937 gen1(r1());
-    std::random_device r2;
-    std::mt19937 gen2(r2());
     std::uniform_int_distribution<> dis(1, 6);
     if (!cheat)
     {
-        roll = dis(gen1)+dis(gen2);
+        roll = dis(gen1)+dis(gen1);
     }
 
     for (Player *player : this->players)
@@ -126,7 +155,14 @@ void Catan::rollDice(int cheat)
             if(player->getTotalResources()>=7)
             {
                 discard = player->getTotalResources()/2;
-                //ADD PLAYER INPUT HERE
+                for(int i = 0;i<Constants::inventorySize;i++)
+                {
+                    while (discard>0 && player->getResourceCount(i+Constants::wood)>0)
+                    {
+                        player->modifyResources(i+Constants::wood,-i);
+                    }
+                    
+                }
             }
         }
     }
@@ -356,7 +392,7 @@ void Catan::printMap() const {
                     std::cout << "EMPTY";
                     break;
                 case Constants::iron:
-                    std::cout << "IRON";
+                    std::cout << "IRON" << map[i][j].getId();
                     break;
                 case Constants::wool:
                     std::cout << "WOOL";
