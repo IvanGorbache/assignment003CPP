@@ -107,10 +107,7 @@ Catan::Catan(Player *p1, Player *p2, Player *p3, bool useDefault, int defaultRol
 }
 Catan::~Catan()
 {
-    for(Player *player : this->players)
-    {
-        delete player;
-    }
+
 }
 
 void Catan::rollDice(int cheat)
@@ -121,10 +118,11 @@ void Catan::rollDice(int cheat)
     std::random_device r1;
     std::mt19937 gen1(r1());
     std::uniform_int_distribution<> dis(1, 6);
-    if (!cheat)
+    if (cheat==0)
     {
         roll = dis(gen1)+dis(gen1);
     }
+    std::cout<<roll;
 
     for (Player *player : this->players)
     {
@@ -143,10 +141,11 @@ void Catan::rollDice(int cheat)
             {
                 if (p != NULL && p->getId() == roll)
                 {
-                    player->modifyResources(p->getId(),amount);
+                    player->modifyResources(p->getClassification()+Constants::wood,amount);
                 }
             }
         }
+        player->printer();
     }
     if (roll==7)
     {
@@ -202,6 +201,7 @@ void Catan::placeSettelemnt(Point a)
         map[a.getX()][a.getY()].setOwner(players[currentTurn]);
         map[a.getX()][a.getY()].upgrade();
         players[currentTurn]->modifyVictoryPoints(1);
+        players[currentTurn]->addSettlements(map[a.getX()][a.getY()]);
         if(!(tutnCounter[currentTurn]<1))
         {
             players[this->currentTurn]->modifyResources(Constants::wood,-1);
@@ -381,38 +381,12 @@ void Catan::endTurn()
 }
 
 void Catan::printMap() const {
+    std::string owner;
     for (int i = 0; i < 12; ++i) {
         for (int j = 0; j < 11; ++j) {
             std::cout << std::setw(11);
-            switch (map[i][j].getClassification()) {
-                case Constants::sea:
-                    std::cout << "SEA";
-                    break;
-                case Constants::empty:
-                    std::cout << "EMPTY";
-                    break;
-                case Constants::iron:
-                    std::cout << "IRON" << map[i][j].getId();
-                    break;
-                case Constants::wool:
-                    std::cout << "WOOL";
-                    break;
-                case Constants::wood:
-                    std::cout << "WOOD";
-                    break;
-                case Constants::wheat:
-                    std::cout << "WHEAT";
-                    break;
-                case Constants::brick:
-                    std::cout << "BRICK";
-                    break;
-                case Constants::desert:
-                    std::cout << "DESERT";
-                    break;
-                default:
-                    std::cout << "UNKNOWN";
-                    break;
-            }
+            owner = map[i][j].getOwner()!=NULL?map[i][j].getOwner()->getName():"";
+            std::cout << Constants::resource[map[i][j].getClassification()]<<"-"<<map[i][j].getId()<<"-"<<owner;
         }
         std::cout << std::endl;
     }

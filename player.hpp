@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
@@ -21,8 +22,12 @@ public:
     int getTotalResources() const;
     int getVictoryPoints() const;
     std::vector<Point> getSettlements() const;
-    bool canTrade(int resource, int amount);
+    bool canTrade(int resourceType, int amount);
     void modifyResources(int myResource, int myAmount);
-    int getResourceCount(int resource);
+    int getResourceCount(int resourceType);
     void modifyVictoryPoints(int count);
+    void addSettlements(Point settlements);
+    std::string getName() const;
+
+    void printer();
 };
