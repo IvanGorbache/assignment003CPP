@@ -382,11 +382,12 @@ void Catan::endTurn()
 
 void Catan::printMap() const {
     std::string owner;
+    const int cellWidth = 5; 
     for (int i = 0; i < 12; ++i) {
         for (int j = 0; j < 11; ++j) {
-            std::cout << std::setw(11);
-            owner = map[i][j].getOwner()!=NULL?map[i][j].getOwner()->getName():"";
-            std::cout << Constants::resource[map[i][j].getClassification()]<<"-"<<map[i][j].getId()<<"-"<<owner;
+            std::cout << std::setw(cellWidth);
+            owner = map[i][j].getOwner() != nullptr ? map[i][j].getOwner()->getName() : "";
+            std::cout << Constants::gameResourceIcons[map[i][j].getClassification()] << "-" << map[i][j].getId() << "-" << owner;
         }
         std::cout << std::endl;
     }
