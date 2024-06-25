@@ -307,7 +307,8 @@ void Catan::trade(Player *player, int myResource, int otherResource, int myAmoun
         player->modifyResources(myResource,myAmount);
         player->modifyResources(otherResource,-otherAmount);
 
-
+        players[currentTurn]->printer();
+        player->printer();
     }
 }
 
@@ -393,10 +394,11 @@ void Catan::endTurn()
 {
     this->tutnCounter[currentTurn]++;
     this->currentTurn = (this->currentTurn+1)%3;
+    std::cout<<players[currentTurn]->getName()<<"'s TURN:"<<std::endl;
 }
 
 void Catan::printMap() const {
-    const int cellWidth = 7;
+    const int cellWidth = 1;
     std::string owner;
 
     for (int i = 0; i < 12; ++i) {
@@ -404,8 +406,14 @@ void Catan::printMap() const {
 
         for (int j = 0; j < 11; ++j) {
             std::cout << std::setw(cellWidth);
-            owner = map[i][j].getOwner() != nullptr ? map[i][j].getOwner()->getName() : "blank";
-            std::cout << Constants::gameResourceIcons[map[i][j].getClassification()] << "-" << map[i][j].getId() << "-" << owner <<" ";
+           
+            if (map[i][j].getOwner() != nullptr) {
+                owner = map[i][j].getOwner()->getName();
+            } else {
+                owner = std::string(1, ' '); 
+            }
+
+            std::cout << "(" << i << "," << j << ") " << Constants::gameResourceIcons[map[i][j].getClassification()] << "-" << map[i][j].getId() << "-" << owner << " ";       
         }
         std::cout << std::endl;
     }

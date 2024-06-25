@@ -3,80 +3,89 @@
 
 int main()
 {
-    Player p1 = Player("Doom"), p2 = Player("Loom"), p3 = Player("Boom");
+    //Constucting the game
+    Player p1 = Player("p1"), p2 = Player("p2"), p3 = Player("p3");
     Catan c = Catan(&p1,&p2,&p3,true);
+
+    //Placing the first roads and towns
+    std::cout<<"--------------------------------------"<<std::endl;
     c.printMap();
-    c.placeSettelemnt(Point(0,7));
-    c.placeRoad(Point(1,6),Point(0,7),true);
-    c.placeRoad(Point(1,8),Point(0,7),true);
-    c.placeRoad(Point(1,8),Point(2,8),true);
-    std::cout<<"//////////////\n";
-    c.printMap();
-    c.placeSettelemnt(Point(1,6));
-    c.placeSettelemnt(Point(1,6));
-    c.placeSettelemnt(Point(1,4));
-    c.placeSettelemnt(Point(3,1));
-    std::cout<<"//////////////\n";
-    c.printMap();
-    c.placeSettelemnt(Point(2,8));
-    c.placeSettelemnt(Point(4,7));
-    std::cout<<"//////////////\n";
-    c.printMap();
-    c.rollDice(5);
-    std::cout<<"//////////////\n";
-    c.endTurn();
-    c.printMap();
-    std::cout<<"//////////////\n";
-    c.placeSettelemnt(Point(0,7));
-    c.placeRoad(Point(1,6),Point(0,7),true);
-    c.placeRoad(Point(1,8),Point(0,7),true);
-    c.placeRoad(Point(1,8),Point(2,8),true);
+
     c.placeSettelemnt(Point(0,3));
+    c.placeRoad(Point(0,3),Point(1,4),true);
+    c.placeRoad(Point(1,4),Point(2,4),true);
+    c.placeSettelemnt(Point(2,4));
+    c.endTurn();
+
+    c.placeSettelemnt(Point(3,7));
+    c.placeRoad(Point(3,7),Point(4,7),true);
+    c.placeRoad(Point(4,7),Point(5,8),true);
+    c.placeSettelemnt(Point(5,8));
+    c.endTurn();
+
+    c.placeSettelemnt(Point(5,2));
+    c.placeRoad(Point(5,2),Point(6,2),true);
+    c.placeRoad(Point(6,2),Point(7,1),true);
+    c.placeSettelemnt(Point(7,1));
+    c.endTurn();
+
+    
+    std::cout<<"---------------------------"<<std::endl;
     c.printMap();
     c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    c.rollDice(5);
-    //c.rollDice(7);
-    c.endTurn();
-    c.endTurn();
+
+    //p1's turn: trades 1 brick for 1 wheat
+    c.trade(&p3,Constants::brick,Constants::wheat,1,1);
+
+    //buys victory card
     c.buyDevelopmentCard(Constants::victoryCard);
-    c.buyDevelopmentCard(Constants::monopoly);
+
+    //print to show that he lost resources to buy the card
+    p1.printer();
+
+    c.endTurn();
+
+    //p2's turn: places two roads
+    c.placeRoad(Point(5,8),Point(6,8),false);
+    c.placeRoad(Point(7,7),Point(6,8),false);
+    std::cout<<"---------------------------"<<std::endl;
+    c.printMap();
+    p2.printer();
+    c.rollDice(5);
+    c.endTurn();
+
+    //p3's turn: places a road
+    c.placeRoad(Point(6,2),Point(7,3),false);
+    std::cout<<"---------------------------"<<std::endl;
+    c.printMap();
+    p3.printer();
+    c.rollDice(5);
+
+    
+    c.endTurn();
+
+    //p1's turn trades 1 wool for 3 wheat
+    c.trade(&p3,Constants::wool,Constants::wheat,1,3);
+
+    //Upgrades a settlement to a city
+    c.buildCity(Point(0,3));
+    std::cout<<"---------------------------"<<std::endl;
+    c.printMap();
+    c.rollDice(5);
+    c.endTurn();
+
+    //p2's turn: trades 2 bricks for 1 wheat and builds a settelement
+    c.trade(&p3,Constants::brick,Constants::wheat,2,1);
+    c.placeSettelemnt(Point(7,7));
+    std::cout<<"---------------------------"<<std::endl;
+    c.printMap();
+    c.rollDice(5);
+    c.endTurn();
+
+    //p3's turn: trades 2 brick for 2 iron and buys a knight
+    c.trade(&p1,Constants::brick,Constants::iron,2,2);
     c.buyDevelopmentCard(Constants::knight);
-    c.buyDevelopmentCard(Constants::pleanty);
-    c.buyDevelopmentCard(Constants::builder);
-    c.trade(&p2,Constants::wood,Constants::iron,20,10);
-    c.useDevelopmentCard(Constants::monopoly,Constants::iron);
-    c.useDevelopmentCard(Constants::pleanty,Constants::wood);
-    c.useDevelopmentCard(Constants::builder,0,1,4,2,4);
-    std::cout<<"//////////////\n";
-    p1.printer();
-    p2.printer();
-    c.printMap();
-    std::cout<<"//////////////\n";
-    p1.printer();
-    p2.printer();
-    std::cout<<"//////////////\n";
-    c.trade(&p2,Constants::wood,Constants::iron,39,4);
-    p1.printer();
-    p2.printer();
-    c.buildCity(Point(0,7));
-    p1.printer();
-    c.printMap();
+    c.rollDice(5);
 
     return 0;
 }
