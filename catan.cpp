@@ -18,7 +18,7 @@ Catan::Catan(Player *p1, Player *p2, Player *p3, bool useDefault, int defaultRol
     std::mt19937 gen(rd());
     if(useDefault)
     {
-        int originalMap[12][11]= 
+        int originalMap[12][11] = 
         {
             {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
             {Constants::sea, Constants::sea, Constants::empty, Constants::iron, Constants::empty, Constants::wool, Constants::empty, Constants::wood, Constants::empty, Constants::sea, Constants::sea},
@@ -396,13 +396,16 @@ void Catan::endTurn()
 }
 
 void Catan::printMap() const {
+    const int cellWidth = 7;
     std::string owner;
-    const int cellWidth = 5; 
+
     for (int i = 0; i < 12; ++i) {
+        // Adjust spacing for staggered rows
+
         for (int j = 0; j < 11; ++j) {
             std::cout << std::setw(cellWidth);
-            owner = map[i][j].getOwner() != nullptr ? map[i][j].getOwner()->getName() : "";
-            std::cout << Constants::gameResourceIcons[map[i][j].getClassification()] << "-" << map[i][j].getId() << "-" << owner;
+            owner = map[i][j].getOwner() != nullptr ? map[i][j].getOwner()->getName() : "blank";
+            std::cout << Constants::gameResourceIcons[map[i][j].getClassification()] << "-" << map[i][j].getId() << "-" << owner <<" ";
         }
         std::cout << std::endl;
     }

@@ -1,10 +1,9 @@
 #include "player.hpp"
 
-Player::Player(std::string name) : name(name), victoryPoints(0), totalResources(0)
+Player::Player(std::string name) : victoryPoints(0), name(name), totalResources(0)
 {
     std::fill(std::begin(resources), std::end(resources), 0);
 }
-
 Player::~Player()
 {
 
