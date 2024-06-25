@@ -1,7 +1,7 @@
 #include "catan.hpp"
 #include "player.hpp"
 
-int main()
+void demo()
 {
     //Constucting the game
     Player p1 = Player("p1"), p2 = Player("p2"), p3 = Player("p3");
@@ -86,6 +86,12 @@ int main()
     c.trade(&p1,Constants::brick,Constants::iron,2,2);
     c.buyDevelopmentCard(Constants::knight);
     c.rollDice(5);
+}
+
+int main()
+{
+
+    demo();
 
     return 0;
 }

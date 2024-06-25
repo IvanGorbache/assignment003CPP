@@ -48,4 +48,6 @@ public:
     void endTurn();
 
     void printMap() const;
+
+    Point GetPoint(int x,int y) const;
 };

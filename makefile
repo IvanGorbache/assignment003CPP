@@ -1,21 +1,30 @@
-CC := g++
-CFLAGS := -Wall -Wextra -std=c++11
+#!make -f
 
-SOURCES := $(wildcard *.cpp)
-OBJECTS := $(SOURCES:.cpp=.o)
-TARGET := Catan
+CXX=g++
+CXXFLAGS := -Wall -Wextra -std=c++11
+VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
 
-$(TARGET): $(OBJECTS)
-	$(CC) $^ -o $@
+SOURCES= catan.cpp constants.cpp main.cpp player.cpp point.cpp Test.cpp TestCounter.cpp 
+OBJECTS=$(subst .cpp,.o,$(SOURCES))
+
+run: demo
+	./$^
+
+demo: main.o $(filter-out TestCounter.o Test.o,$(OBJECTS))
+	$(CXX) $(CXXFLAGS) $^ -o demo
+
+test: TestCounter.o Test.o $(filter-out main.o,$(OBJECTS))
+	$(CXX) $(CXXFLAGS) $^ -o test
+
+tidy:
+	clang-tidy $(SOURCES) -checks=bugprone-*,clang-analyzer-*,cppcoreguidelines-*,performance-*,portability-*,readability-*,-cppcoreguidelines-pro-bounds-pointer-arithmetic,-cppcoreguidelines-owning-memory --warnings-as-errors=-* --
+
+valgrind: demo 
+	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./demo 2>&1 | { egrep "lost| at " || true; }
+	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./test 2>&1 | { egrep "lost| at " || true; }
 
 %.o: %.cpp
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) --compile $< -o $@
 
-valgrind: 
-	valgrind --tool=memcheck $(VALGRIND_FLAGS) ./Catan 2>&1 | { egrep "lost| at " || true; }
-	
 clean:
-	rm -f $(OBJECTS) $(TARGET)
-
-.PHONY: clean
-
+	rm -f *.o demo test

@@ -18,7 +18,7 @@ Catan::Catan(Player *p1, Player *p2, Player *p3, bool useDefault, int defaultRol
     std::mt19937 gen(rd());
     if(useDefault)
     {
-        int originalMap[12][11] = 
+        int defaultMap[12][11] = 
         {
             {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
             {Constants::sea, Constants::sea, Constants::empty, Constants::iron, Constants::empty, Constants::wool, Constants::empty, Constants::wood, Constants::empty, Constants::sea, Constants::sea},
@@ -33,10 +33,11 @@ Catan::Catan(Player *p1, Player *p2, Player *p3, bool useDefault, int defaultRol
             {Constants::sea, Constants::sea, Constants::empty, Constants::wood, Constants::empty, Constants::wheat, Constants::empty, Constants::wool, Constants::empty, Constants::sea, Constants::sea},
             {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
         };
+        std::copy(&defaultMap[0][0], &defaultMap[0][0] + 12 * 11, &originalMap[0][0]);
     }
     else
     {
-        int originalMap[12][11]= 
+        int tempMap[12][11]= 
         {
             {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
             {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
@@ -51,6 +52,7 @@ Catan::Catan(Player *p1, Player *p2, Player *p3, bool useDefault, int defaultRol
             {Constants::sea, Constants::sea, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::temp, Constants::empty, Constants::sea, Constants::sea},
             {Constants::sea, Constants::sea, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::empty, Constants::sea, Constants::sea, Constants::sea},
         };
+        std::copy(&tempMap[0][0], &tempMap[0][0] + 12 * 11, &originalMap[0][0]);
         for(int i = 1;i<12;i+=2)
         {
             for(int j = 0;j<11;j++)
@@ -417,4 +419,9 @@ void Catan::printMap() const {
         }
         std::cout << std::endl;
     }
+}
+
+Point Catan::GetPoint(int x, int y) const
+{
+    return map[x][y];
 }
