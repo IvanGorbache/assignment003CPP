@@ -19,5 +19,6 @@ public:
 
     Point* getStart() const;
     Point* getEnd() const; 
+    std::string toString() const; // Declaration of toString() method
 };
 

@@ -94,15 +94,7 @@ void Point::addRoad(Road road)
 {
     if (this->roads.size() < 3)
     {
-        // Determine the start and end points correctly
-        Point* start = (road.getStart() == this) ? this : road.getStart();
-        Point* end = (road.getEnd() == this) ? road.getStart() : road.getEnd();
-
-        // Add the road with the correct direction
-        this->roads.push_back(Road(road.getOwner(), start, end));
-
-        std::cout << start->getX() << "," << start->getY() << " -> " 
-                << end->getX() << "," << end->getY() << std::endl;
+        this->roads.push_back(road);
     }
 }
 

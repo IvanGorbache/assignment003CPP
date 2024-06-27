@@ -30,3 +30,13 @@ Point* Road::getEnd() const
 {
     return this->end;
 }
+
+std::string Road::toString() const
+{
+    std::string ownerName = (owner != nullptr) ? owner->getName() : "None"; // Assuming Player has a getName() method
+
+    std::string startStr = "(" + std::to_string(start->getX()) + "," + std::to_string(start->getY()) + ")";
+    std::string endStr = "(" + std::to_string(end->getX()) + "," + std::to_string(end->getY()) + ")";
+
+    return "Road owned by: " + ownerName + ", from " + startStr + " to " + endStr;
+}

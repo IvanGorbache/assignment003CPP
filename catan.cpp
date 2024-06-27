@@ -178,13 +178,13 @@ void Catan::placeSettelemnt(Point a)
     bool hasNeighbors = false;
 
     // Check if the point is empty and has roads connected or it's the initial turn
-    if (map[a.getX()][a.getY()].getClassification() == Constants::empty &&(map[a.getX()][a.getY()].getRoads().size() > 0 || turnCounter[currentTurn] < 1))
+    if (map[a.getX()][a.getY()].getClassification() == Constants::empty && (map[a.getX()][a.getY()].getRoads().size() > 0 || turnCounter[currentTurn] < 1))
     {
         // If it's the initial turn, check if it has no owner and can be placed without roads
         if (turnCounter[currentTurn] < 1 && map[a.getX()][a.getY()].getOwner() == nullptr && map[a.getX()][a.getY()].getRoads().size() == 0)
         {
             canPlace = true;
-            hasNeighbors = true;  
+            hasNeighbors = true;
         }
         else
         {
@@ -198,20 +198,22 @@ void Catan::placeSettelemnt(Point a)
                     Point* end = road.getEnd();
 
                     // Check if there's another settlement adjacent to this road
-                    if ((start->getClassification() == Constants::settlement && start->getOwner() == players[currentTurn]) ||
-                        (end->getClassification() == Constants::settlement && end->getOwner() == players[currentTurn]))
+                    if ((end->getClassification() == Constants::settlement && end->getOwner() == players[currentTurn]))
                     {
+
                         canPlace = false;
                         break;
                     }
 
                     // Check if there's a settlement two roads away owned by the player
                     bool hasTwoRoadsAway = false;
-                    for (Road secondRoad : (start == &map[a.getX()][a.getY()]) ? end->getRoads() : start->getRoads())
+
+                    for (Road secondRoad : end->getRoads())
                     {
+                        std::cout<<secondRoad.toString();
                         if (secondRoad.getOwner() == players[currentTurn])
                         {
-                            Point* secondEnd = (secondRoad.getStart() == start || secondRoad.getStart() == end) ? secondRoad.getEnd() : secondRoad.getStart();
+                            Point* secondEnd = secondRoad.getEnd();
 
                             // Check if the secondEnd leads to a settlement owned by the player
                             if (secondEnd->getClassification() == Constants::settlement && secondEnd->getOwner() == players[currentTurn])
@@ -290,8 +292,8 @@ void Catan::placeRoad(Point a, Point b, bool isFree)
                     players[this->currentTurn]->modifyResources(Constants::brick,-1);
                 }
 
-                map[a.getX()][a.getY()].addRoad(Road(players[currentTurn],&a,&b));
-                map[b.getX()][b.getY()].addRoad(Road(players[currentTurn],&a,&b));
+                map[a.getX()][a.getY()].addRoad(Road(players[currentTurn],&map[a.getX()][a.getY()],&map[b.getX()][b.getY()]));
+                map[b.getX()][b.getY()].addRoad(Road(players[currentTurn],&map[b.getX()][b.getY()],&map[a.getX()][a.getY()]));
             }
         }
     }

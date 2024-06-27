@@ -47,7 +47,27 @@ TEST_CASE("Test placingTown")
     CHECK(c.GetPoint(3,3).getClassification()==Constants::settlement);
     CHECK(c.GetPoint(3,3).getOwner()==&p1);
 
-    //c.printMap();
+    //placing a settlement connected only to a road that doesn't belong to you
+    c.placeRoad(Point(2,2),Point(3,1),true); 
+    c.endTurn();
+    c.placeSettelemnt(Point(3,1));
+    CHECK(c.GetPoint(3,1).getClassification()==Constants::empty);
+    CHECK(c.GetPoint(3,1).getOwner()==nullptr);
+
+    c.placeRoad(Point(5,0),Point(4,1),true);
+    c.placeRoad(Point(3,1),Point(4,1),true);
+    c.placeSettelemnt(Point(3,1));
+    CHECK(c.GetPoint(3,1).getClassification()==Constants::settlement);
+    CHECK(c.GetPoint(3,1).getOwner()==&p2);
+
+    c.endTurn();
+    c.endTurn();
+
+    c.placeSettelemnt(Point(3,1));
+    CHECK(c.GetPoint(3,1).getClassification()==Constants::settlement);
+    CHECK(c.GetPoint(3,1).getOwner()==&p2);
+
+    c.printMap();
 
 
 }
