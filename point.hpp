@@ -2,7 +2,9 @@
 #include <vector>
 #include "constants.hpp"
 #include "player.hpp"
+#include "road.hpp"
 class Player;
+class Road;
 class Point
 {
 private:
@@ -10,6 +12,7 @@ private:
     Player* owner;
     int classification;
     std::vector<Point> neighbors;
+    std::vector<Road> roads;
     
 public:
     Point();
@@ -33,4 +36,8 @@ public:
     void upgrade();
 
     bool operator==(const Point& other) const;
+
+    void addRoad(Road road);
+    std::vector<Road> getRoads();
+    bool hasRoad(Point a, Point b);
 };

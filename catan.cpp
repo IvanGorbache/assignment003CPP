@@ -9,7 +9,7 @@ Catan::Catan(Player *p1, Player *p2, Player *p3, bool useDefault, int defaultRol
     this->players[2] = p3;
     minCard = Constants::knight;
     maxCard = Constants::victoryCard;
-    std::fill_n(this->tutnCounter, 3, 0);
+    std::fill_n(this->turnCounter, 3, 0);
     std::vector<Point> points;
     int biomCount[] = {1,4,3,3,4,4};
     int rand = 0;
@@ -174,44 +174,82 @@ void Catan::rollDice(int cheat)
 
 void Catan::placeSettelemnt(Point a)
 {
-    bool canPlace = true;
-    if((map[a.getX()][a.getY()].getOwner() == NULL || map[a.getX()][a.getY()].getOwner() == players[currentTurn]) && map[a.getX()][a.getY()].getClassification() == Constants::empty && (map[a.getX()][a.getY()].getNeighbors().size()>0 || tutnCounter[currentTurn]<1))
+    bool canPlace = false;
+    bool hasNeighbors = false;
+
+    // Check if the point is empty and has roads connected or it's the initial turn
+    if (map[a.getX()][a.getY()].getClassification() == Constants::empty &&(map[a.getX()][a.getY()].getRoads().size() > 0 || turnCounter[currentTurn] < 1))
     {
-        for(Point neighbor : map[a.getX()][a.getY()].getNeighbors())
+        // If it's the initial turn, check if it has no owner and can be placed without roads
+        if (turnCounter[currentTurn] < 1 && map[a.getX()][a.getY()].getOwner() == nullptr && map[a.getX()][a.getY()].getRoads().size() == 0)
         {
-            if((neighbor.getClassification() == Constants::empty) && (neighbor.getOwner() == map[a.getX()][a.getY()].getOwner()))
+            canPlace = true;
+            hasNeighbors = true;  
+        }
+        else
+        {
+            // Check if the point is connected to the player's roads
+            for (Road road : map[a.getX()][a.getY()].getRoads())
             {
-                for(Point outerNeighbor : neighbor.getNeighbors())
+                if (road.getOwner() == players[currentTurn])
                 {
-                    if(outerNeighbor.getClassification()!=Constants::empty && (outerNeighbor.getOwner() == map[a.getX()][a.getY()].getOwner()))
+                    hasNeighbors = true;
+                    Point* start = road.getStart();
+                    Point* end = road.getEnd();
+
+                    // Check if there's another settlement adjacent to this road
+                    if ((start->getClassification() == Constants::settlement && start->getOwner() == players[currentTurn]) ||
+                        (end->getClassification() == Constants::settlement && end->getOwner() == players[currentTurn]))
+                    {
+                        canPlace = false;
+                        break;
+                    }
+
+                    // Check if there's a settlement two roads away owned by the player
+                    bool hasTwoRoadsAway = false;
+                    for (Road secondRoad : (start == &map[a.getX()][a.getY()]) ? end->getRoads() : start->getRoads())
+                    {
+                        if (secondRoad.getOwner() == players[currentTurn])
+                        {
+                            Point* secondEnd = (secondRoad.getStart() == start || secondRoad.getStart() == end) ? secondRoad.getEnd() : secondRoad.getStart();
+
+                            // Check if the secondEnd leads to a settlement owned by the player
+                            if (secondEnd->getClassification() == Constants::settlement && secondEnd->getOwner() == players[currentTurn])
+                            {
+                                hasTwoRoadsAway = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (hasTwoRoadsAway)
                     {
                         canPlace = true;
+                        break;
                     }
                 }
             }
-            else
-            {   
-                canPlace = false;
-            }
         }
     }
-    else
-    {
-        canPlace = false;
-    }
-    
-    if(canPlace && ((players[currentTurn]->canTrade(Constants::brick,1) && players[currentTurn]->canTrade(Constants::wood,1) && players[currentTurn]->canTrade(Constants::wool,1)&& players[currentTurn]->canTrade(Constants::wheat,1)) || tutnCounter[currentTurn]<1))
+
+    // Final check and resource deduction
+    if (canPlace && hasNeighbors && ((players[currentTurn]->canTrade(Constants::brick, 1) &&
+                      players[currentTurn]->canTrade(Constants::wood, 1) &&
+                      players[currentTurn]->canTrade(Constants::wool, 1) &&
+                      players[currentTurn]->canTrade(Constants::wheat, 1)) ||
+                     turnCounter[currentTurn] < 1))
     {
         map[a.getX()][a.getY()].setOwner(players[currentTurn]);
-        map[a.getX()][a.getY()].upgrade();
+        map[a.getX()][a.getY()].setClassification(Constants::settlement);
         players[currentTurn]->modifyVictoryPoints(1);
         players[currentTurn]->addSettlements(map[a.getX()][a.getY()]);
-        if(!(tutnCounter[currentTurn]<1))
+
+        if (!(turnCounter[currentTurn] < 1))
         {
-            players[this->currentTurn]->modifyResources(Constants::wood,-1);
-            players[this->currentTurn]->modifyResources(Constants::brick,-1);
-            players[this->currentTurn]->modifyResources(Constants::wool,-1);
-            players[this->currentTurn]->modifyResources(Constants::wheat,-1);
+            players[this->currentTurn]->modifyResources(Constants::wood, -1);
+            players[this->currentTurn]->modifyResources(Constants::brick, -1);
+            players[this->currentTurn]->modifyResources(Constants::wool, -1);
+            players[this->currentTurn]->modifyResources(Constants::wheat, -1);
         }
     }
 }
@@ -234,36 +272,27 @@ void Catan::placeRoad(Point a, Point b, bool isFree)
     {
         if((Constants::empty<=map[a.getX()][a.getY()].getClassification() && map[a.getX()][a.getY()].getClassification()<=Constants::city)&&(Constants::empty<=map[b.getX()][b.getY()].getClassification() && map[b.getX()][b.getY()].getClassification()<=Constants::city))
         {
-            if(((map[a.getX()][a.getY()].getOwner() != NULL)&&(map[b.getX()][b.getY()].getOwner() == NULL)) || ((map[a.getX()][a.getY()].getOwner() == NULL)&&(map[b.getX()][b.getY()].getOwner() != NULL)))
-            {
-                canPlace = true;
-            }
-            else if (((map[a.getX()][a.getY()].getOwner() != NULL)&&(map[b.getX()][b.getY()].getOwner() != NULL)) && ((map[a.getX()][a.getY()].getOwner() == map[b.getX()][b.getY()].getOwner())))
-            {
-                canPlace = true;
-                
-            }
-        }    
+            canPlace = true;
+        }
     }
-    if(canPlace && ((players[currentTurn]->canTrade(Constants::wood,1)&&players[currentTurn]->canTrade(Constants::brick,1))||tutnCounter[currentTurn]<1||isFree))
+    if(canPlace && ((players[currentTurn]->canTrade(Constants::wood,1)&&players[currentTurn]->canTrade(Constants::brick,1))||turnCounter[currentTurn]<1||isFree))
     {
-        map[a.getX()][a.getY()].addNeighbor(map[b.getX()][b.getY()]);
-
-        map[b.getX()][b.getY()].addNeighbor(map[a.getX()][a.getY()]);
-
-        if(!(tutnCounter[currentTurn]<1||isFree))
+        if(!a.hasRoad(a,b) && !b.hasRoad(a,b))
         {
-            players[this->currentTurn]->modifyResources(Constants::wood,-1);
-            players[this->currentTurn]->modifyResources(Constants::brick,-1);
-        }
+            if(a.getRoads().size()<3 && b.getRoads().size()<3)
+            {
+                map[a.getX()][a.getY()].addNeighbor(map[b.getX()][b.getY()]);
+                map[b.getX()][b.getY()].addNeighbor(map[a.getX()][a.getY()]);
 
-        if((map[a.getX()][a.getY()].getOwner() != NULL)&&(map[b.getX()][b.getY()].getOwner() == NULL))
-        {
-            map[b.getX()][b.getY()].setOwner(map[a.getX()][a.getY()].getOwner());
-        }
-        else if((map[a.getX()][a.getY()].getOwner() == NULL)&&(map[b.getX()][b.getY()].getOwner() != NULL))
-        {
-            map[a.getX()][a.getY()].setOwner(map[b.getX()][b.getY()].getOwner());
+                if(!(turnCounter[currentTurn]<1||isFree))
+                {
+                    players[this->currentTurn]->modifyResources(Constants::wood,-1);
+                    players[this->currentTurn]->modifyResources(Constants::brick,-1);
+                }
+
+                map[a.getX()][a.getY()].addRoad(Road(players[currentTurn],&a,&b));
+                map[b.getX()][b.getY()].addRoad(Road(players[currentTurn],&a,&b));
+            }
         }
     }
 }
@@ -394,7 +423,7 @@ bool Catan::checkVictory()
 
 void Catan::endTurn()
 {
-    this->tutnCounter[currentTurn]++;
+    this->turnCounter[currentTurn]++;
     this->currentTurn = (this->currentTurn+1)%3;
     std::cout<<players[currentTurn]->getName()<<"'s TURN:"<<std::endl;
 }

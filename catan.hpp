@@ -2,6 +2,7 @@
 
 #include "player.hpp"
 #include "point.hpp"
+#include "road.hpp"
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
@@ -15,7 +16,7 @@ class Catan
 {
 private:
     Player *players[3];
-    int tutnCounter[3];
+    int turnCounter[3];
     int originalMap[12][11];
     Point map[12][11];
     int currentTurn;

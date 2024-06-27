@@ -4,7 +4,7 @@ CXX=g++
 CXXFLAGS := -Wall -Wextra -std=c++11
 VALGRIND_FLAGS=-v --leak-check=full --show-leak-kinds=all  --error-exitcode=99
 
-SOURCES= catan.cpp constants.cpp main.cpp player.cpp point.cpp Test.cpp TestCounter.cpp 
+SOURCES= catan.cpp constants.cpp main.cpp player.cpp point.cpp Test.cpp TestCounter.cpp road.cpp
 OBJECTS=$(subst .cpp,.o,$(SOURCES))
 
 run: demo
