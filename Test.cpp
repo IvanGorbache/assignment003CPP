@@ -10,9 +10,9 @@ TEST_CASE("Test placingTown")
     Catan c = Catan(&p1,&p2,&p3,true);
     for(int i = 0;i<Constants::inventorySize;i++)
     {
-        p1.modifyResources(Constants::wood+i,10);
-        p2.modifyResources(Constants::wood+i,10);
-        p3.modifyResources(Constants::wood+i,10);
+        p1.modifyResources(Constants::wood+i,100);
+        p2.modifyResources(Constants::wood+i,100);
+        p3.modifyResources(Constants::wood+i,100);
     }
     CHECK(c.GetPoint(1,2).getClassification()==Constants::empty);
     c.placeSettelemnt(Point(1,2));
@@ -54,6 +54,7 @@ TEST_CASE("Test placingTown")
     CHECK(c.GetPoint(3,1).getClassification()==Constants::empty);
     CHECK(c.GetPoint(3,1).getOwner()==nullptr);
 
+    //testing builing on a regular turn
     c.placeRoad(Point(5,0),Point(4,1),true);
     c.placeRoad(Point(3,1),Point(4,1),true);
     c.placeSettelemnt(Point(3,1));
@@ -66,8 +67,37 @@ TEST_CASE("Test placingTown")
     c.placeSettelemnt(Point(3,1));
     CHECK(c.GetPoint(3,1).getClassification()==Constants::settlement);
     CHECK(c.GetPoint(3,1).getOwner()==&p2);
+    c.endTurn();
+    c.buildCity(Point(3,1));
+    CHECK(c.GetPoint(3,1).getClassification()==Constants::city);
 
     c.printMap();
+    c.rollDice(100);
 
+    CHECK(c.getPlayer(0)->getVictoryPoints()==2);
+    CHECK(c.getPlayer(1)->getVictoryPoints()==3);
+    CHECK(c.getPlayer(2)->getVictoryPoints()==0);
 
+}
+TEST_CASE("Test trading")
+{
+    Player p1 = Player("p1"), p2 = Player("p2"), p3 = Player("p3");
+    Catan c = Catan(&p1,&p2,&p3,true);
+    for(int i = 0;i<Constants::inventorySize;i++)
+    {
+        p1.modifyResources(Constants::wood+i,100);
+        p2.modifyResources(Constants::wood+i,100);
+        p3.modifyResources(Constants::wood+i,100);
+    }
+}
+TEST_CASE("Test cards")
+{
+    Player p1 = Player("p1"), p2 = Player("p2"), p3 = Player("p3");
+    Catan c = Catan(&p1,&p2,&p3,true);
+    for(int i = 0;i<Constants::inventorySize;i++)
+    {
+        p1.modifyResources(Constants::wood+i,100);
+        p2.modifyResources(Constants::wood+i,100);
+        p3.modifyResources(Constants::wood+i,100);
+    }
 }

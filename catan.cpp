@@ -258,8 +258,10 @@ void Catan::placeSettelemnt(Point a)
 
 void Catan::buildCity(Point a)
 {
+    std::cout<<"Upgrade";
     if(map[a.getX()][a.getY()].getOwner() == players[currentTurn] && map[a.getX()][a.getY()].getClassification()==Constants::settlement&& players[currentTurn]->canTrade(Constants::iron,3)&& players[currentTurn]->canTrade(Constants::wheat,2))
     {
+    
         map[a.getX()][a.getY()].upgrade();
         players[currentTurn]->modifyVictoryPoints(1);
         players[this->currentTurn]->modifyResources(Constants::iron,-3);
@@ -298,7 +300,6 @@ void Catan::placeRoad(Point a, Point b, bool isFree)
         }
     }
 }
-
 
 void Catan::trade(Player *player, int myResource, int otherResource, int myAmount, int otherAmount)
 {
@@ -463,4 +464,9 @@ void Catan::printMap() const {
 Point Catan::GetPoint(int x, int y) const
 {
     return map[x][y];
+}
+
+Player* Catan::getPlayer(int index) const
+{
+    return this->players[index];
 }

@@ -51,4 +51,6 @@ public:
     void printMap() const;
 
     Point GetPoint(int x,int y) const;
+
+    Player* getPlayer(int index) const;
 };
