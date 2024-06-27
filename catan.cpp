@@ -450,6 +450,14 @@ void Catan::printMap() const {
         }
         std::cout << std::endl;
     }
+    for (int i = 0; i < 12; ++i) {
+        for (int j = 0; j < 11; ++j) {
+            for(Road road:map[i][j].getRoads())
+            {
+                std::cout<<road.toString()<<std::endl;
+            }
+        }
+    }
 }
 
 Point Catan::GetPoint(int x, int y) const

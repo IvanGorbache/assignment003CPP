@@ -38,6 +38,6 @@ public:
     bool operator==(const Point& other) const;
 
     void addRoad(Road road);
-    std::vector<Road> getRoads();
+    std::vector<Road> getRoads() const;
     bool hasRoad(Point a, Point b);
 };

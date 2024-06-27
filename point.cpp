@@ -99,7 +99,7 @@ void Point::addRoad(Road road)
 }
 
 
-std::vector<Road> Point::getRoads()
+std::vector<Road> Point::getRoads() const
 {
     return this->roads;
 }
