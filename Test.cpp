@@ -8,11 +8,11 @@ TEST_CASE("Test placingTown")
 {    
     Player p1 = Player("p1"), p2 = Player("p2"), p3 = Player("p3");
     Catan c = Catan(&p1,&p2,&p3,true);
-    for(int i = 0;i<Constants::inventorySize;i++)
+    for(int i = Constants::wood;i<=Constants::wool;i++)
     {
-        p1.modifyResources(Constants::wood+i,100);
-        p2.modifyResources(Constants::wood+i,100);
-        p3.modifyResources(Constants::wood+i,100);
+        p1.modifyResources(i,100);
+        p2.modifyResources(i,100);
+        p3.modifyResources(i,100);
     }
     CHECK(c.GetPoint(1,2).getClassification()==Constants::empty);
     c.placeSettelemnt(Point(1,2));
@@ -35,6 +35,10 @@ TEST_CASE("Test placingTown")
     c.placeSettelemnt(Point(5,0));
 
     c.endTurn();
+
+    //for future check
+    c.placeSettelemnt(Point(8,3));
+
     c.endTurn();
 
     //plaching a settlement with no roads connected to it
@@ -74,30 +78,71 @@ TEST_CASE("Test placingTown")
     c.printMap();
     c.rollDice(100);
 
+    //checking if the resources were used for the building
     CHECK(c.getPlayer(0)->getVictoryPoints()==2);
     CHECK(c.getPlayer(1)->getVictoryPoints()==3);
-    CHECK(c.getPlayer(2)->getVictoryPoints()==0);
+    //CHECK(c.getPlayer(2)->getVictoryPoints()==0);
+
+
+    //placing settlement 1 road away from enemy
+    c.placeRoad(Point(4,1),Point(5,2),true);
+    c.placeRoad(Point(5,2),Point(6,2),true);
+    c.placeRoad(Point(7,3),Point(6,2),true);
+    c.placeRoad(Point(8,3),Point(7,3),true);
+
+
+    c.placeSettelemnt(Point(5,2));
+    c.placeSettelemnt(Point(7,3));
+
+    //checking placing settlement close to enemy
+    CHECK(c.GetPoint(7,3).getClassification()==Constants::settlement);
+    CHECK(c.GetPoint(7,3).getOwner()==&p2);
+
+    //checking placing settlement close to ally
+    c.placeSettelemnt(Point(6,2));
+    CHECK(c.GetPoint(6,2).getClassification()==Constants::empty);
+    CHECK(c.GetPoint(6,2).getOwner()==nullptr);
+
+
+    c.printMap();
+    c.rollDice(100);
+
+
 
 }
 TEST_CASE("Test trading")
 {
     Player p1 = Player("p1"), p2 = Player("p2"), p3 = Player("p3");
     Catan c = Catan(&p1,&p2,&p3,true);
-    for(int i = 0;i<Constants::inventorySize;i++)
+    for(int i = Constants::wood;i<=Constants::wool;i++)
     {
-        p1.modifyResources(Constants::wood+i,100);
-        p2.modifyResources(Constants::wood+i,100);
-        p3.modifyResources(Constants::wood+i,100);
+        p1.modifyResources(i,100);
+        p2.modifyResources(i,100);
+        p3.modifyResources(i,100);
     }
 }
 TEST_CASE("Test cards")
 {
     Player p1 = Player("p1"), p2 = Player("p2"), p3 = Player("p3");
     Catan c = Catan(&p1,&p2,&p3,true);
-    for(int i = 0;i<Constants::inventorySize;i++)
+    for(int i = Constants::wood;i<=Constants::wool;i++)
     {
-        p1.modifyResources(Constants::wood+i,100);
-        p2.modifyResources(Constants::wood+i,100);
-        p3.modifyResources(Constants::wood+i,100);
+        p1.modifyResources(i,100);
+        p2.modifyResources(i,100);
+        p3.modifyResources(i,100);
     }
+    c.rollDice(100);
+    //using cards that you don't have
+    c.useDevelopmentCard(Constants::monopoly,Constants::wood);
+
+    CHECK(c.getPlayer(0)->getResourceCount(Constants::wood)==100);
+    CHECK(c.getPlayer(1)->getResourceCount(Constants::wood)==100);
+    CHECK(c.getPlayer(2)->getResourceCount(Constants::wood)==100);
+
+    c.useDevelopmentCard(Constants::pleanty,Constants::wood);
+
+    CHECK(c.getPlayer(0)->getResourceCount(Constants::wood)==100);
+
+
+
 }

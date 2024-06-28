@@ -392,30 +392,33 @@ void Catan::getCurrentPlayerCards()
 
 void Catan::useDevelopmentCard(int card,int resource,int x, int y,int u,int v)
 {
-    switch (card)
+    if(players[currentTurn]->canTrade(card,1))
     {
-    case Constants::monopoly:
-        for(Player *player : this->players)
-        {
-            if(player!=players[currentTurn])
+        switch (card)
             {
-                this->players[currentTurn]->modifyResources(resource,player->getResourceCount(resource)/2);
-                player->modifyResources(resource,-player->getResourceCount(resource)/2);
+            case Constants::monopoly:
+                for(Player *player : this->players)
+                {
+                    if(player!=players[currentTurn])
+                    {
+                        this->players[currentTurn]->modifyResources(resource,player->getResourceCount(resource)/2);
+                        player->modifyResources(resource,-player->getResourceCount(resource)/2);
 
+                    }
+                }
+                break;
+
+            case Constants::pleanty:
+                players[currentTurn]->modifyResources(resource,2);
+                break;
+
+            case Constants::builder:
+                this->placeRoad(Point(x,y),Point(u,v),true);
+                break;
+            
+            default:
+                break;
             }
-        }
-        break;
-
-    case Constants::pleanty:
-        players[currentTurn]->modifyResources(resource,2);
-        break;
-
-    case Constants::builder:
-        this->placeRoad(Point(x,y),Point(u,v),true);
-        break;
-    
-    default:
-        break;
     }
 }
 
