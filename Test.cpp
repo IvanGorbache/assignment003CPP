@@ -120,6 +120,51 @@ TEST_CASE("Test trading")
         p2.modifyResources(i,100);
         p3.modifyResources(i,100);
     }
+
+    //illegal trades
+    c.trade(&p2,Constants::wood,Constants::wood,1000,100);
+    CHECK(c.getPlayer(0)->getResourceCount(Constants::wood)==100);
+    CHECK(c.getPlayer(1)->getResourceCount(Constants::wood)==100);
+
+    c.trade(&p2,Constants::wood,Constants::wood,100,1000);
+    CHECK(c.getPlayer(0)->getResourceCount(Constants::wood)==100);
+    CHECK(c.getPlayer(1)->getResourceCount(Constants::wood)==100);
+
+    c.trade(&p2,Constants::wood,Constants::wood,1000,1000);
+    CHECK(c.getPlayer(0)->getResourceCount(Constants::wood)==100);
+    CHECK(c.getPlayer(1)->getResourceCount(Constants::wood)==100);
+
+    //trading victory
+    c.buyDevelopmentCard(Constants::victoryCard);
+    c.trade(&p2,Constants::victoryCard,Constants::wood,1,0);
+    CHECK(c.getPlayer(0)->getVictoryPoints()==0);
+    CHECK(c.getPlayer(1)->getVictoryPoints()==1);
+
+    std::cout<<"------------------";
+    //trading knight
+    c.buyDevelopmentCard(Constants::knight);
+    c.buyDevelopmentCard(Constants::knight);
+    c.buyDevelopmentCard(Constants::knight);
+
+    c.trade(&p2,Constants::knight,Constants::wood,2,0);
+    CHECK(c.getPlayer(0)->getVictoryPoints()==0);
+    CHECK(c.getPlayer(1)->getVictoryPoints()==1);
+
+    CHECK(c.getPlayer(1)->getResourceCount(Constants::knight)==2);
+    c.trade(&p2,Constants::knight,Constants::wood,1,0);
+    CHECK(c.getPlayer(0)->getVictoryPoints()==0);
+    CHECK(c.getPlayer(1)->getVictoryPoints()==3);
+
+    //regular trade
+    c.trade(&p2,Constants::wood,Constants::brick,50,50);
+    CHECK(c.getPlayer(1)->getResourceCount(Constants::wood)==150);
+    CHECK(c.getPlayer(0)->getResourceCount(Constants::brick)==150);
+    CHECK(c.getPlayer(0)->getResourceCount(Constants::wood)==50);
+    CHECK(c.getPlayer(1)->getResourceCount(Constants::brick)==50);
+
+    
+    c.rollDice(100);
+
 }
 TEST_CASE("Test cards")
 {
@@ -142,6 +187,43 @@ TEST_CASE("Test cards")
     c.useDevelopmentCard(Constants::pleanty,Constants::wood);
 
     CHECK(c.getPlayer(0)->getResourceCount(Constants::wood)==100);
+
+    c.buyDevelopmentCard(Constants::monopoly);
+    c.buyDevelopmentCard(Constants::pleanty);
+    c.buyDevelopmentCard(Constants::builder);
+    c.buyDevelopmentCard(Constants::knight);
+    c.buyDevelopmentCard(Constants::knight);
+    c.buyDevelopmentCard(Constants::knight);
+    c.buyDevelopmentCard(Constants::victoryCard);
+    c.placeSettelemnt(Point(1,8));
+
+    //regular development card use
+
+
+    c.useDevelopmentCard(Constants::monopoly,Constants::wood);
+
+    CHECK(c.getPlayer(0)->getResourceCount(Constants::wood)==200);
+    CHECK(c.getPlayer(1)->getResourceCount(Constants::wood)==50);
+    CHECK(c.getPlayer(2)->getResourceCount(Constants::wood)==50);
+
+    c.useDevelopmentCard(Constants::pleanty,Constants::wood);
+
+    CHECK(c.getPlayer(0)->getResourceCount(Constants::wood)==202);
+
+    c.useDevelopmentCard(Constants::builder,0,1,8,2,8,2,8,3,9);
+
+    CHECK(c.GetPoint(1,8).hasRoad(Point(2,8))==true);
+    CHECK(c.GetPoint(2,8).hasRoad(Point(1,8))==true);
+    
+    CHECK(c.GetPoint(3,9).hasRoad(Point(2,8))==true);
+    CHECK(c.GetPoint(2,8).hasRoad(Point(3,9))==true);
+
+    //1 for settelement
+    //1 for victory card
+    //2 for 3 knights
+    CHECK(c.getPlayer(0)->getVictoryPoints()==4);
+
+    c.printMap();
 
 
 

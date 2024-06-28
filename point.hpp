@@ -39,5 +39,5 @@ public:
 
     void addRoad(Road road);
     std::vector<Road> getRoads() const;
-    bool hasRoad(Point a, Point b);
+    bool hasRoad(Point b);
 };

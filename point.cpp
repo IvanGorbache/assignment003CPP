@@ -20,6 +20,7 @@ Point::Point( int x,  int y)
 {
     this->x = x;
     this->y = y;
+    this->id = 0;
 }
 Point::~Point()
 {
@@ -104,11 +105,11 @@ std::vector<Road> Point::getRoads() const
     return this->roads;
 }
 
-bool Point::hasRoad(Point a, Point b)
+bool Point::hasRoad(Point b)
 {
     for(Road road:this->roads)
     {
-        if(*road.getStart() ==a && *road.getEnd()==b || *road.getStart()==b && *road.getEnd()==a)
+        if(*road.getEnd()==b)
         {
             return true;
         }

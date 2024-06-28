@@ -281,7 +281,7 @@ void Catan::placeRoad(Point a, Point b, bool isFree)
     }
     if(canPlace && ((players[currentTurn]->canTrade(Constants::wood,1)&&players[currentTurn]->canTrade(Constants::brick,1))||turnCounter[currentTurn]<1||isFree))
     {
-        if(!a.hasRoad(a,b) && !b.hasRoad(a,b))
+        if(!a.hasRoad(b) && !b.hasRoad(a))
         {
             if(a.getRoads().size()<3 && b.getRoads().size()<3)
             {
@@ -306,21 +306,27 @@ void Catan::trade(Player *player, int myResource, int otherResource, int myAmoun
     if(players[currentTurn]->canTrade(myResource,myAmount) && player->canTrade(otherResource,otherAmount))
     {
         
-        if(myResource==Constants::knight && players[currentTurn]->getResourceCount(Constants::knight)==3)
+        if(myResource==Constants::knight)
         {
-            players[currentTurn]->modifyVictoryPoints(-1);
-            if(player->getResourceCount(Constants::knight)+myResource==3)
+            if( players[currentTurn]->getResourceCount(Constants::knight)==3)
             {
-                player->modifyVictoryPoints(1);
+                players[currentTurn]->modifyVictoryPoints(-2);
+            }
+            if(player->getResourceCount(Constants::knight)+myAmount==3)
+            {
+                player->modifyVictoryPoints(2);
             }
         }
 
-        if(otherResource==Constants::knight && player->getResourceCount(Constants::knight)==3)
+        if(otherResource==Constants::knight)
         {
-            player->modifyVictoryPoints(-1);
+            if(player->getResourceCount(Constants::knight)==3)
+            {
+                player->modifyVictoryPoints(-2);
+            }
             if(players[currentTurn]->getResourceCount(Constants::knight)+otherAmount==3)
             {
-                players[currentTurn]->modifyVictoryPoints(1);
+                players[currentTurn]->modifyVictoryPoints(2);
             }
         }
 
@@ -364,7 +370,7 @@ void Catan::buyDevelopmentCard(int choice)
             this->knightsCount++;
             if(knightsCount==3)
             {
-                players[currentTurn]->modifyVictoryPoints(1);
+                players[currentTurn]->modifyVictoryPoints(2);
                 minCard++;
             }
         }
@@ -390,7 +396,7 @@ void Catan::getCurrentPlayerCards()
     
 }
 
-void Catan::useDevelopmentCard(int card,int resource,int x, int y,int u,int v)
+void Catan::useDevelopmentCard(int card,int resource,int x1, int y1,int u1,int v1,int x2, int y2,int u2,int v2)
 {
     if(players[currentTurn]->canTrade(card,1))
     {
@@ -413,7 +419,8 @@ void Catan::useDevelopmentCard(int card,int resource,int x, int y,int u,int v)
                 break;
 
             case Constants::builder:
-                this->placeRoad(Point(x,y),Point(u,v),true);
+                this->placeRoad(Point(x1,y1),Point(u1,v1),true);
+                this->placeRoad(Point(x2,y2),Point(u2,v2),true);
                 break;
             
             default:
