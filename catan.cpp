@@ -177,10 +177,8 @@ void Catan::placeSettelemnt(Point a)
     bool canPlace = false;
     bool hasNeighbors = false;
 
-    // Check if the point is empty and has roads connected or it's the initial turn
     if (map[a.getX()][a.getY()].getClassification() == Constants::empty && (map[a.getX()][a.getY()].getRoads().size() > 0 || turnCounter[currentTurn] < 1))
     {
-        // If it's the initial turn, check if it has no owner and can be placed without roads
         if (turnCounter[currentTurn] < 1 && map[a.getX()][a.getY()].getOwner() == nullptr && map[a.getX()][a.getY()].getRoads().size() == 0)
         {
             canPlace = true;
@@ -188,16 +186,13 @@ void Catan::placeSettelemnt(Point a)
         }
         else
         {
-            // Check if the point is connected to the player's roads
             for (Road road : map[a.getX()][a.getY()].getRoads())
             {
                 if (road.getOwner() == players[currentTurn])
                 {
                     hasNeighbors = true;
-                    Point* start = road.getStart();
                     Point* end = road.getEnd();
 
-                    // Check if there's another settlement adjacent to this road
                     if ((end->getClassification() == Constants::settlement && end->getOwner() == players[currentTurn]))
                     {
 
@@ -205,7 +200,6 @@ void Catan::placeSettelemnt(Point a)
                         break;
                     }
 
-                    // Check if there's a settlement two roads away owned by the player
                     bool hasTwoRoadsAway = false;
 
                     for (Road secondRoad : end->getRoads())
@@ -215,7 +209,6 @@ void Catan::placeSettelemnt(Point a)
                         {
                             Point* secondEnd = secondRoad.getEnd();
 
-                            // Check if the secondEnd leads to a settlement owned by the player
                             if (secondEnd->getClassification() == Constants::settlement && secondEnd->getOwner() == players[currentTurn])
                             {
                                 hasTwoRoadsAway = true;
@@ -234,7 +227,6 @@ void Catan::placeSettelemnt(Point a)
         }
     }
 
-    // Final check and resource deduction
     if (canPlace && hasNeighbors && ((players[currentTurn]->canTrade(Constants::brick, 1) &&
                       players[currentTurn]->canTrade(Constants::wood, 1) &&
                       players[currentTurn]->canTrade(Constants::wool, 1) &&
@@ -391,11 +383,6 @@ void Catan::buyDevelopmentCard(int choice)
     }
 }
 
-void Catan::getCurrentPlayerCards()
-{
-    
-}
-
 void Catan::useDevelopmentCard(int card,int resource,int x1, int y1,int u1,int v1,int x2, int y2,int u2,int v2)
 {
     if(players[currentTurn]->canTrade(card,1))
@@ -426,6 +413,8 @@ void Catan::useDevelopmentCard(int card,int resource,int x1, int y1,int u1,int v
             default:
                 break;
             }
+        players[currentTurn]->modifyResources(card,-1);
+
     }
 }
 
